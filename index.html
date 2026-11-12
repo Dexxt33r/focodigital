@@ -1,0 +1,2096 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foco Digital | Marketing, audiovisual e sistemas para negócios</title>
+    
+    <!-- Tipografia da marca e fonte para dados do simulador -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        night: '#07070d',
+                        electric: '#3b82f6',
+                        'electric-dark': '#2563eb',
+                        cantaloupe: '#f97316',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        lato: ['Outfit', 'sans-serif'],
+                        raleway: ['Outfit', 'sans-serif'],
+                        vibes: ['Outfit', 'sans-serif'],
+                        inter: ['Outfit', 'sans-serif'],
+                        garamond: ['Outfit', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'glow-orange': '0 8px 20px rgba(0, 0, 0, 0.28)',
+                        'glow-blue': '0 8px 20px rgba(0, 0, 0, 0.28)',
+                        'glow-full': '0 12px 28px rgba(0, 0, 0, 0.32)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* REGRA RÍGIDA DE 3 CORES PRINCIPAIS */
+        :root {
+            --night: #07070d;
+            --electric: #3b82f6;
+            --electric-dark: #2563eb;
+            --cantaloupe: #f97316;
+        }
+
+        body {
+            background: radial-gradient(ellipse at 78% 8%, rgba(59, 130, 246, .15), transparent 34rem), radial-gradient(ellipse at 8% 42%, rgba(249, 115, 22, .08), transparent 28rem), linear-gradient(180deg, #0b0d14 0%, var(--night) 42rem, #090a10 100%);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #motionField {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: .72;
+            transition: opacity .8s ease, filter .8s ease;
+        }
+
+        body[data-view="audiovisual"] #motionField { opacity: .82; filter: saturate(1.18); }
+        body[data-view="tecnologia"] #motionField { opacity: .62; filter: saturate(.92); }
+        body[data-view="marketing"] #motionField { opacity: .76; filter: saturate(1.1); }
+        body[data-view="equipe"] #motionField { opacity: .72; filter: saturate(1.04); }
+
+        .scroll-progress {
+            position: fixed;
+            inset: 0 0 auto;
+            z-index: 55;
+            height: 2px;
+            background: rgba(255,255,255,.08);
+            pointer-events: none;
+        }
+
+        .scroll-progress i {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--cantaloupe), var(--electric));
+            transform: scaleX(var(--scroll-progress, 0));
+            transform-origin: left;
+        }
+
+        .focus-art { transform: translate3d(0, var(--scroll-drift, 0px), 0); will-change: transform; }
+
+        .focus-art {
+            min-height: 420px;
+            height: min(42vw, 560px);
+            position: relative;
+            display: grid;
+            place-items: center;
+            isolation: isolate;
+        }
+
+        @media (min-width: 1024px) { .nav-link { padding: .45rem .62rem; font-size: .7rem; } }
+        @media (min-width: 1280px) { .nav-link { padding: .5rem .78rem; font-size: .75rem; } }
+
+        .home-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .home-hero-grid > * { min-width: 0; }
+
+        .focus-art::before {
+            content: "";
+            position: absolute;
+            width: 70%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59,130,246,.13), rgba(59,130,246,.035) 42%, transparent 72%);
+            filter: blur(6px);
+            z-index: -1;
+        }
+
+        .focus-orbit {
+            position: absolute;
+            top: 11%;
+            left: 11%;
+            width: 78%;
+            aspect-ratio: 1;
+            border: 1px solid rgba(59,130,246,.22);
+            border-radius: 50%;
+            animation: orbit-breathe 8s ease-in-out infinite;
+        }
+
+        .focus-orbit::before,
+        .focus-orbit::after {
+            content: "";
+            position: absolute;
+            inset: 9%;
+            border: 1px solid rgba(255,255,255,.09);
+            border-radius: 50%;
+        }
+
+        .focus-orbit::after {
+            inset: 18%;
+            border-color: rgba(249,115,22,.28);
+            border-style: dashed;
+            animation: orbit-turn 36s linear infinite;
+        }
+
+        .focus-lens {
+            position: relative;
+            width: 42%;
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 50%;
+            background: radial-gradient(circle at 36% 30%, rgba(59,130,246,.2), rgba(12,14,20,.88) 60%);
+            box-shadow: 0 22px 70px rgba(0,0,0,.42), inset 0 0 38px rgba(59,130,246,.12);
+            animation: lens-drift 7s ease-in-out infinite;
+            transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s ease;
+        }
+
+        .focus-art:hover .focus-lens {
+            scale: 1.06;
+            box-shadow: 0 28px 88px rgba(0,0,0,.5), inset 0 0 50px rgba(59,130,246,.2);
+        }
+
+        .focus-secret {
+            position: absolute;
+            left: 50%;
+            bottom: 9%;
+            width: max-content;
+            max-width: 90%;
+            padding: .7rem 1rem;
+            border: 1px solid rgba(249,115,22,.35);
+            border-radius: 999px;
+            background: rgba(12,14,20,.94);
+            color: #fff;
+            font-size: .72rem;
+            opacity: 0;
+            transform: translate(-50%, 8px);
+            transition: opacity .35s ease, transform .35s cubic-bezier(.2,.8,.2,1);
+        }
+
+        .focus-art:hover .focus-secret { opacity: 1; transform: translate(-50%, 0); }
+
+        .focus-lens::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 33%;
+            aspect-ratio: 1;
+            border: 1px solid rgba(249,115,22,.48);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 32px rgba(249,115,22,.1);
+        }
+
+        .focus-core {
+            z-index: 1;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: .14em;
+            font-size: .72rem;
+            font-weight: 700;
+        }
+
+        .focus-core strong {
+            display: block;
+            font-size: clamp(1.7rem, 3vw, 2.8rem);
+            letter-spacing: -.06em;
+        }
+
+        .focus-core span { color: var(--cantaloupe); }
+
+        .focus-axis {
+            position: absolute;
+            width: 88%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59,130,246,.42), transparent);
+            transform: rotate(-34deg);
+        }
+
+        .focus-axis.axis-two {
+            width: 72%;
+            background: linear-gradient(90deg, transparent, rgba(249,115,22,.35), transparent);
+            transform: rotate(52deg);
+        }
+
+        .focus-coordinate {
+            position: absolute;
+            color: rgba(255,255,255,.62);
+            font: 600 .66rem/1.2 'JetBrains Mono', monospace;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255,255,255,.16);
+            padding: 0 0 .5rem;
+        }
+
+        .focus-coordinate.coord-one { top: 15%; left: 3%; }
+        .focus-coordinate.coord-two { right: 1%; top: 38%; color: rgba(249,115,22,.85); }
+        .focus-coordinate.coord-three { left: 10%; bottom: 15%; }
+
+        .focus-video-frame { position:absolute; inset:4% 2% 5% 5%; overflow:hidden; isolation:isolate; border:1px solid rgba(132,166,220,.34); border-radius:28px; background:#090b11; box-shadow:0 30px 90px rgba(0,0,0,.48),0 0 60px rgba(59,130,246,.12); transform:perspective(1500px) rotateY(-5deg); }
+        .focus-video-frame::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(90deg,rgba(7,7,13,.48),transparent 55%),linear-gradient(0deg,rgba(7,7,13,.68),transparent 34%); }
+        .focus-home-video { display:block; width:100%; height:100%; object-fit:cover; object-position:82% center; }
+        .focus-video-badge { position:absolute; z-index:1; top:1.15rem; right:1.15rem; border:1px solid rgba(255,255,255,.14); border-radius:999px; background:rgba(7,9,14,.72); backdrop-filter:blur(12px); color:#e7ecf5; padding:.55rem .75rem; font:600 .62rem/1 'JetBrains Mono',monospace; letter-spacing:.13em; text-transform:uppercase; }
+        .focus-video-badge i { display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--cantaloupe); margin-right:.45rem; box-shadow:0 0 12px rgba(249,115,22,.7); }
+        .focus-video-caption { position:absolute; z-index:1; left:1.25rem; right:1.25rem; bottom:1.15rem; display:flex; justify-content:space-between; align-items:end; gap:.8rem; color:#f8f9fc; }
+        .focus-video-caption strong { display:block; font-size:clamp(.9rem,1.45vw,1.15rem); letter-spacing:-.02em; }
+        .focus-video-caption span { display:block; margin-top:.28rem; color:#b8c1d1; font:500 .58rem/1.5 'JetBrains Mono',monospace; letter-spacing:.08em; text-transform:uppercase; }
+        .focus-video-index { color:#fda466!important; white-space:nowrap; }
+
+        @keyframes orbit-turn { to { transform: rotate(360deg); } }
+        @keyframes orbit-breathe { 0%,100% { transform: scale(.97); opacity: .78; } 50% { transform: scale(1.025); opacity: 1; } }
+        @keyframes lens-drift { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-9px,0); } }
+        @keyframes page-arrive { from { opacity: 0; transform: translateY(22px); filter: blur(5px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
+        @keyframes page-scroll-arrive-down { from { opacity: 0; transform: translate3d(0,44px,0) scale(.99); filter: blur(6px); } 68% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+        @keyframes page-scroll-arrive-up { from { opacity: 0; transform: translate3d(0,-44px,0) scale(.99); filter: blur(6px); } 68% { opacity: 1; filter: blur(0); } to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+
+        .page-view.active-view { animation: page-arrive .72s cubic-bezier(.18,.72,.2,1) both; }
+        .page-view.active-view.scroll-arrive-down { animation: page-scroll-arrive-down .68s cubic-bezier(.16,1,.3,1) both; }
+        .page-view.active-view.scroll-arrive-up { animation: page-scroll-arrive-up .68s cubic-bezier(.16,1,.3,1) both; }
+        main { perspective: 1400px; perspective-origin: center center; }
+        .page-view.scroll-roll-view { animation: none !important; }
+        .page-view.active-view h1 { animation: page-arrive .8s .06s cubic-bezier(.18,.72,.2,1) both; }
+        .page-view.active-view.scroll-arrive-down h1 { animation: page-scroll-arrive-down .72s .04s cubic-bezier(.16,1,.3,1) both; }
+        .page-view.active-view.scroll-arrive-up h1 { animation: page-scroll-arrive-up .72s .04s cubic-bezier(.16,1,.3,1) both; }
+        .page-view.active-view section > .grid,
+        .page-view.active-view section > div.grid { animation: page-arrive .85s .16s cubic-bezier(.18,.72,.2,1) both; }
+
+        .page-curtain {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            pointer-events: none;
+            visibility: hidden;
+        }
+        .page-curtain.is-running { visibility: visible; }
+        .page-curtain-panel {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #11151f 0%, #07070d 72%);
+            border-color: rgba(255,255,255,.08);
+        }
+        .page-curtain-panel:first-child { border-right: 1px solid rgba(255,255,255,.12); }
+        .page-curtain-panel:last-child { border-left: 1px solid rgba(255,255,255,.12); }
+        .page-curtain-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 100% 50%, rgba(59,130,246,.22), transparent 46%), radial-gradient(ellipse at 0% 50%, rgba(249,115,22,.16), transparent 45%);
+        }
+        .page-curtain-mark {
+            position: absolute;
+            z-index: 1;
+            top: 50%;
+            color: rgba(255,255,255,.88);
+            font: 700 clamp(.75rem, 1.2vw, 1rem)/1 'JetBrains Mono', monospace;
+            letter-spacing: .28em;
+            text-transform: uppercase;
+            white-space: nowrap;
+            transform: translateY(-50%);
+        }
+        .page-curtain-panel:first-child .page-curtain-mark { right: clamp(1rem, 5vw, 5rem); }
+        .page-curtain-panel:last-child .page-curtain-mark { left: clamp(1rem, 5vw, 5rem); }
+        .page-curtain-mark i { color: var(--cantaloupe); font-style: normal; }
+
+        .next-page-dock {
+            position: fixed;
+            z-index: 60;
+            left: 50%;
+            bottom: max(1.25rem, env(safe-area-inset-bottom));
+            width: min(calc(100vw - 2rem), 390px);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translate(-50%, 14px) scale(.98);
+            transition: opacity .16s ease-out, transform .2s cubic-bezier(.2,.8,.2,1), visibility .16s;
+        }
+        .next-page-dock.is-visible { visibility: visible; }
+        .next-page-dock.is-interactive { pointer-events: auto; }
+        .next-page-button {
+            position: relative;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            overflow: hidden;
+            padding: .85rem 1rem .85rem 1.15rem;
+            border: 1px solid rgba(255,255,255,.24);
+            border-radius: 20px;
+            background: linear-gradient(115deg, rgba(20,27,39,.78), rgba(14,18,28,.58));
+            color: white;
+            text-align: left;
+            box-shadow: 0 18px 55px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.2), 0 0 32px rgba(59,130,246,.14);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            transition: border-color .25s ease, box-shadow .25s ease, background .25s ease;
+        }
+        .next-page-button::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.75), rgba(59,130,246,.62), transparent);
+            pointer-events: none;
+        }
+        .next-page-button::after {
+            content: "";
+            position: absolute;
+            top: -60%;
+            left: -25%;
+            width: 45%;
+            height: 220%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,.09), transparent);
+            transform: rotate(20deg);
+            transition: left .65s ease;
+            pointer-events: none;
+        }
+        .next-page-button:hover { border-color: rgba(249,115,22,.65); box-shadow: 0 22px 64px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.25), 0 0 38px rgba(249,115,22,.2); }
+        .next-page-button:hover::after { left: 110%; }
+        .next-page-copy { position: relative; z-index: 1; }
+        .next-page-eyebrow { display: block; margin-bottom: .22rem; color: #9fc5ff; font: 600 .58rem/1.2 'JetBrains Mono',monospace; letter-spacing: .16em; text-transform: uppercase; }
+        .next-page-title { display: block; font-size: .94rem; font-weight: 700; letter-spacing: -.02em; }
+        .next-page-arrow { position: relative; z-index: 1; display: grid; width: 40px; height: 40px; flex: 0 0 40px; place-items: center; border: 1px solid rgba(255,255,255,.2); border-radius: 50%; background: linear-gradient(145deg, rgba(59,130,246,.88), rgba(249,115,22,.9)); color: #fff; box-shadow: 0 4px 18px rgba(59,130,246,.3); transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+        .next-page-button:hover .next-page-arrow { transform: translateX(3px) rotate(-8deg); }
+        @media (prefers-reduced-motion: reduce) { .next-page-dock, .next-page-button, .next-page-arrow { transition-duration: .01ms; } }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(28px);
+            filter: blur(3px);
+            transition: opacity .7s ease, transform .7s cubic-bezier(.2,.75,.25,1), filter .7s ease;
+            transition-delay: var(--reveal-delay, 0ms);
+        }
+
+        .reveal-on-scroll.is-visible { opacity: 1; transform: translateY(0); filter: blur(0); }
+
+        .page-view.active-view .intro-reveal { animation: page-arrive .8s cubic-bezier(.18,.72,.2,1) both; }
+        .page-view.active-view .intro-reveal:nth-child(2) { animation-delay: .1s; }
+        .page-view.active-view .intro-reveal:nth-child(3) { animation-delay: .2s; }
+        .page-view.active-view .intro-reveal:nth-child(4) { animation-delay: .3s; }
+
+        #view-home .mt-12 .glass-card { animation: page-arrive .8s cubic-bezier(.18,.72,.2,1) both; }
+        #view-home .mt-12 .glass-card:nth-child(1) { animation-delay: .18s; }
+        #view-home .mt-12 .glass-card:nth-child(2) { animation-delay: .28s; }
+        #view-home .mt-12 .glass-card:nth-child(3) { animation-delay: .38s; }
+        #view-home .mt-12 .glass-card:nth-child(4) { animation-delay: .48s; }
+
+        @media (max-width: 1023px) {
+            .focus-art { min-height: 350px; height: 72vw; max-height: 470px; }
+        }
+
+        @media (min-width: 1024px) {
+            .home-hero-grid { grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 1rem; }
+        }
+
+        @media (max-width: 639px) {
+            .focus-art { min-height: 300px; height: 84vw; max-height: 390px; margin-top: 1rem; }
+            .focus-coordinate { font-size: .58rem; }
+            .focus-secret { bottom: 4%; font-size: .65rem; }
+            .focus-video-frame { inset:2% 0 4% 0; border-radius:22px; transform:none; }
+            .focus-video-badge { top:.8rem; right:.8rem; font-size:.54rem; }
+            .focus-video-caption { left:.9rem; right:.9rem; bottom:.85rem; }
+            .focus-video-caption span { font-size:.5rem; }
+        }
+
+        /* Superfícies sólidas deixam o conteúdo e a marca em primeiro plano. */
+        .glass-panel {
+            background: #10131b;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.24);
+        }
+
+        .glass-card {
+            background: #10131b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(249, 115, 22, 0.45);
+            transform: translateY(-5px);
+            box-shadow: 0 22px 42px rgba(0, 0, 0, 0.35);
+        }
+
+        .glass-card [data-lucide], .glass-card-orange [data-lucide] { transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+        .glass-card:hover [data-lucide], .glass-card-orange:hover [data-lucide] { transform: translateY(-3px) rotate(-5deg) scale(1.08); }
+
+        .chat-shell { background: #10131b; border: 1px solid rgba(255,255,255,.1); }
+        .chat-feed {
+            height: 320px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: .75rem;
+            padding: 1rem;
+            background: radial-gradient(ellipse at 80% 0%, rgba(59,130,246,.08), transparent 52%), #0b0d14;
+        }
+        .chat-bubble { max-width: 88%; padding: .7rem .85rem; border-radius: 14px; font-size: .76rem; line-height: 1.55; animation: chat-pop .28s cubic-bezier(.2,.75,.25,1) both; }
+        .chat-bubble.agent { align-self: flex-start; background: #171c26; border: 1px solid rgba(255,255,255,.08); color: #f3f4f6; border-bottom-left-radius: 4px; }
+        .chat-bubble.customer { align-self: flex-end; background: rgba(59,130,246,.16); border: 1px solid rgba(59,130,246,.24); color: #fff; border-bottom-right-radius: 4px; }
+        .chat-bubble.system { align-self: center; max-width: 100%; background: rgba(249,115,22,.08); color: #fdba74; border: 1px solid rgba(249,115,22,.16); font-size: .68rem; text-align: center; }
+        .chat-actions { display:flex; flex-wrap:wrap; gap:.5rem; padding: .8rem 1rem; border-top:1px solid rgba(255,255,255,.08); }
+        .chat-actions button { border:1px solid rgba(59,130,246,.3); border-radius:999px; padding:.45rem .7rem; color:#bfdbfe; font-size:.68rem; transition:background .2s,color .2s,transform .2s; }
+        .chat-actions button:hover { background:rgba(59,130,246,.16); color:#fff; transform:translateY(-1px); }
+        .chat-input-row { display:flex; gap:.5rem; padding:.75rem 1rem 1rem; }
+        .chat-input-row input { min-width:0; flex:1; background:#0b0d14; border:1px solid rgba(255,255,255,.12); border-radius:10px; color:#fff; padding:.7rem .8rem; font-size:.75rem; }
+        .chat-input-row button { display:grid; place-items:center; width:42px; border-radius:10px; background:var(--cantaloupe); color:var(--night); }
+        @keyframes chat-pop { from {opacity:0; transform:translateY(8px) scale(.98)} to {opacity:1;transform:translateY(0) scale(1)} }
+
+        .report-bar { min-width:0; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:.5rem; height:170px; }
+        .report-bar i { display:block; width:min(100%,34px); min-height:4px; border-radius:5px 5px 2px 2px; background:linear-gradient(180deg,var(--electric),rgba(59,130,246,.22)); transform-origin:bottom; animation:bar-rise .7s cubic-bezier(.2,.75,.25,1) both; }
+        .report-bar.today i { background:linear-gradient(180deg,var(--cantaloupe),rgba(249,115,22,.24)); }
+        .report-bar span { color:#9ca3af; font-size:.62rem; white-space:nowrap; }
+        .report-period[aria-pressed="true"] { background:rgba(59,130,246,.2); color:#fff; border-color:rgba(59,130,246,.5); }
+        @keyframes bar-rise { from {transform:scaleY(.08);opacity:.4} to {transform:scaleY(1);opacity:1} }
+
+        .showcase-video { background:#090b11; border:1px solid rgba(255,255,255,.12); box-shadow:0 24px 70px rgba(0,0,0,.38); }
+        .showcase-preview { position:relative; display:grid; width:100%; aspect-ratio:16/9; overflow:hidden; place-items:center; border:0; color:#fff; text-align:left; background:#090b11; }
+        .showcase-preview img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:82% center; transition:transform .7s cubic-bezier(.2,.75,.25,1), filter .5s ease; }
+        .showcase-preview::after { content:""; position:absolute; inset:0; background:linear-gradient(90deg,rgba(7,7,13,.54),transparent 75%),linear-gradient(0deg,rgba(7,7,13,.78),transparent 60%); pointer-events:none; }
+        .showcase-preview:hover img { transform:scale(1.035); filter:saturate(1.1); }
+        .showcase-preview:focus-visible { outline:2px solid var(--cantaloupe); outline-offset:-4px; }
+        .showcase-preview-label { position:absolute; z-index:1; left:1.1rem; top:1.1rem; color:#eef2fa; font:600 .62rem/1 'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; }
+        .showcase-preview-play { position:relative; z-index:1; display:inline-flex; align-items:center; justify-content:center; gap:.65rem; padding:.85rem 1.25rem; border:1px solid rgba(255,255,255,.25); border-radius:999px; background:rgba(7,9,14,.78); color:white; font-size:.8rem; font-weight:800; box-shadow:0 10px 32px rgba(0,0,0,.34); backdrop-filter:blur(12px); transition:transform .25s ease,background .25s ease,border-color .25s ease; }
+        .showcase-preview:hover .showcase-preview-play { transform:translateY(-2px) scale(1.02); background:var(--cantaloupe); border-color:var(--cantaloupe); color:var(--night); }
+        .showreel-dialog { position:fixed; inset:0; width:100vw; height:100dvh; max-width:none; max-height:none; margin:0; padding:clamp(1rem,3vw,2.75rem); border:0; background:rgba(5,6,10,.98); color:white; }
+        .showreel-dialog[open] { display:flex; flex-direction:column; }
+        .showreel-dialog::backdrop { background:rgba(0,0,0,.94); backdrop-filter:blur(16px); }
+        .showreel-dialog-top { display:flex; flex:0 0 auto; align-items:center; justify-content:space-between; gap:1rem; width:min(100%,1440px); margin:0 auto 1rem; }
+        .showreel-dialog-title { font-size:clamp(1rem,2vw,1.4rem); font-weight:800; }
+        .showreel-dialog-close { display:grid; width:44px; height:44px; flex:0 0 44px; place-items:center; border:1px solid rgba(255,255,255,.18); border-radius:50%; background:#131722; color:#fff; transition:background .2s ease,transform .2s ease; }
+        .showreel-dialog-close:hover { transform:rotate(90deg); background:#252b37; }
+        .showreel-dialog-stage { display:grid; flex:1 1 auto; min-height:0; place-items:center; }
+        .showreel-dialog video { display:block; width:min(100%,1440px); max-height:calc(100dvh - 130px); aspect-ratio:16/9; border-radius:14px; background:#000; object-fit:contain; box-shadow:0 28px 100px rgba(0,0,0,.52); }
+        .showreel-next { border:1px solid rgba(249,115,22,.45); background:rgba(249,115,22,.1); color:#fdba74; }
+        .showreel-next:hover { background:var(--cantaloupe); color:var(--night); }
+        @media (max-width:639px) { .showreel-dialog { padding:.75rem; } .showreel-dialog video { width:100%; border-radius:9px; } .showcase-preview-label { top:.8rem; left:.8rem; font-size:.52rem; } }
+
+        .glass-card-orange {
+            background: #15120f;
+            border: 1px solid rgba(249, 115, 22, 0.26);
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.24);
+        }
+
+        /* DOCK NAVBAR FLUTUANTE */
+        .floating-nav-dock {
+            background: rgba(12, 14, 20, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+        }
+
+        .nav-link {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            position: relative;
+        }
+
+        .nav-link.active {
+            color: #ffffff;
+            background: rgba(249, 115, 22, 0.2);
+            border: 1px solid rgba(249, 115, 22, 0.5);
+        }
+
+        .nav-link:hover:not(.active) {
+            color: #ffffff;
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* TRANSIÇÃO ENTRE VISÕES DE PÁGINA */
+        .page-view {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+
+        .page-view.active-view {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* CUSTOM SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #07070d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+        :focus-visible { outline: 2px solid var(--cantaloupe); outline-offset: 4px; }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+            .reveal-on-scroll { opacity: 1; transform: none; filter: none; }
+        }
+    </style>
+</head>
+<body id="bodyTag" data-view="home" class="relative selection:bg-cantaloupe selection:text-night min-h-screen flex flex-col justify-between">
+    <div id="pageCurtain" class="page-curtain" aria-hidden="true">
+        <div class="page-curtain-panel"><span class="page-curtain-mark">FOCO <i>·</i> DIGITAL</span></div>
+        <div class="page-curtain-panel"><span class="page-curtain-mark">FOCO <i>·</i> DIGITAL</span></div>
+    </div>
+    <div id="nextPageDock" class="next-page-dock" aria-hidden="true">
+        <button id="nextPageButton" class="next-page-button" type="button" aria-label="Ir para a próxima página">
+            <span class="next-page-copy"><span class="next-page-eyebrow">Continue explorando</span><span id="nextPageTitle" class="next-page-title">Próxima página</span></span>
+            <span class="next-page-arrow" aria-hidden="true"><i data-lucide="arrow-right" class="w-5 h-5"></i></span>
+        </button>
+    </div>
+
+    <canvas id="motionField" aria-hidden="true"></canvas>
+    <div class="scroll-progress" aria-hidden="true"><i></i></div>
+
+    <!-- NAVBAR DOCK FLUTUANTE -->
+    <div class="fixed top-4 inset-x-0 z-40 flex justify-center px-4">
+        <header class="floating-nav-dock w-full max-w-6xl rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between">
+            
+            <!-- LOGO OFICIAL FOCO DIGITAL -->
+            <a href="javascript:void(0)" onclick="switchView('home')" class="flex items-center space-x-2 group">
+                <div class="h-8 flex items-center">
+                    <svg class="h-7 w-auto transition-transform group-hover:scale-105" viewBox="0 0 460 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M120 32 L140 16 C143 13 148 11 153 11 L197 11 C202 11 207 13 210 16 L230 32 L250 32 C262 32 270 40 270 52 L270 90 C270 102 262 110 250 110 L100 110 C88 110 80 102 80 90 L80 52 C80 40 88 32 100 32 Z" fill="none" stroke="#3b82f6" stroke-width="3.5" opacity="0.35"/>
+                        <circle cx="132" cy="24" r="5" fill="#f97316"/>
+                        <path d="M15 35 L62 35 L58 49 L32 49 L30 60 L54 60 L50 74 L26 74 L20 100 L2 100 Z" fill="#FFFFFF"/>
+                        <circle cx="92" cy="68" r="28" fill="#07070d" stroke="#3b82f6" stroke-width="6"/>
+                        <circle cx="92" cy="68" r="6" fill="#f97316"/>
+                        <path d="M155 67 C155 46 168 33 190 33 C204 33 214 41 217 53 L200 56 C198 49 194 46 188 46 C177 46 172 55 172 67 C172 79 177 88 188 88 C194 88 199 84 202 76 L218 80 C213 93 203 102 188 102 C167 102 155 88 155 67 Z" fill="#FFFFFF"/>
+                        <circle cx="240" cy="68" r="28" fill="#07070d" stroke="#3b82f6" stroke-width="6"/>
+                        <circle cx="240" cy="68" r="6" fill="#f97316"/>
+                        <path d="M280 35 L305 35 C324 35 335 47 335 67 C335 88 322 100 302 100 L266 100 Z M284 86 L298 86 C310 86 317 78 317 67 C317 56 310 49 298 49 L292 49 Z" fill="#3b82f6"/>
+                        <path d="M342 35 L359 35 L346 100 L329 100 Z" fill="#3b82f6"/>
+                        <path d="M386 64 L408 64 L401 100 L378 100 C364 100 355 89 355 68 C355 47 367 35 385 35 C401 35 411 45 411 60 L394 60 C394 52 389 48 383 48 C375 48 371 56 371 67 C371 78 376 86 383 86 C387 86 391 83 393 77 L389 77 Z" fill="#3b82f6"/>
+                        <path d="M422 35 L439 35 L426 100 L409 100 Z" fill="#3b82f6"/>
+                        <path d="M446 35 L462 35 L459 48 L443 48 Z M437 54 L454 54 L443 100 L426 100 Z" fill="#3b82f6"/>
+                    </svg>
+                    <span class="ml-2 px-2 py-0.5 rounded-full text-[9px] font-black bg-cantaloupe text-night uppercase hidden lg:inline-block">360°</span>
+                </div>
+            </a>
+
+            <!-- MULTI-PAGE NAVIGATION (SWAP DE VISÕES) -->
+            <nav class="hidden lg:flex items-center space-x-1 text-xs font-semibold text-gray-300" aria-label="Navegação principal">
+                <button onclick="switchView('home')" id="nav-home" class="nav-link active">Home 360°</button>
+                <button onclick="switchView('audiovisual')" id="nav-audiovisual" class="nav-link">Audiovisual & Motion</button>
+                <button onclick="switchView('tecnologia')" id="nav-tecnologia" class="nav-link">Tecnologia & PDV</button>
+                <button onclick="switchView('marketing')" id="nav-marketing" class="nav-link">Marketing & IA</button>
+                <button onclick="switchView('equipe')" id="nav-equipe" class="nav-link">Equipe Integrada</button>
+            </nav>
+
+            <!-- CONTATO DIRETO WHATSAPP -->
+            <div class="flex items-center space-x-3">
+                <a href="https://wa.me/5535998444212?text=Olá!%20Vim%20pelo%20site%20da%20Foco%20Digital%20e%20quero%20conversar%20sobre%20minha%20empresa." 
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="bg-cantaloupe hover:bg-orange-600 text-night font-black px-4 py-2 rounded-full text-xs tracking-wider flex items-center space-x-1.5 transition-all">
+                    <i data-lucide="phone-call" class="w-3.5 h-3.5 fill-night"></i>
+                    <span class="hidden sm:inline">(35) 99844-4212</span>
+                    <span class="sm:hidden">WHATSAPP</span>
+                </a>
+                <button id="mobileMenuBtn" class="lg:hidden text-white p-1 focus:outline-none" aria-controls="mobileMenu" aria-expanded="false" aria-label="Abrir menu">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </header>
+    </div>
+
+    <!-- MENU MOBILE FLUTUANTE -->
+    <div id="mobileMenu" class="hidden fixed top-20 inset-x-4 z-40 floating-nav-dock rounded-2xl p-6 space-y-3 lg:hidden">
+        <button onclick="switchView('home')" class="w-full text-left text-gray-200 hover:text-cantaloupe font-semibold text-sm py-2 border-b border-electric/10">Home 360°</button>
+        <button onclick="switchView('audiovisual')" class="w-full text-left text-gray-200 hover:text-cantaloupe font-semibold text-sm py-2 border-b border-electric/10">Audiovisual & Motion</button>
+        <button onclick="switchView('tecnologia')" class="w-full text-left text-gray-200 hover:text-cantaloupe font-semibold text-sm py-2 border-b border-electric/10">Tecnologia & PDV</button>
+        <button onclick="switchView('marketing')" class="w-full text-left text-gray-200 hover:text-cantaloupe font-semibold text-sm py-2">Marketing & IA</button>
+        <button onclick="switchView('equipe')" class="w-full text-left text-gray-200 hover:text-cantaloupe font-semibold text-sm py-2">Equipe Integrada</button>
+    </div>
+
+    <!-- CONTÉM TODAS AS PÁGINAS/VISÕES DO ECOSSISTEMA -->
+    <main class="relative z-10 pt-32 pb-16 flex-grow">
+
+        <!-- ========================================== -->
+        <!-- PÁGINA 1: HOME 360° (VISÃO GERAL DO ECOSSISTEMA) -->
+        <!-- ========================================== -->
+        <div id="view-home" class="page-view active-view">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-left pt-2">
+                <div class="home-hero-grid">
+                    <div class="hero-copy relative z-10">
+                
+                <div class="intro-reveal inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-gray-200 text-xs font-semibold uppercase tracking-wider mb-4 font-raleway">
+                    <span>Marketing, audiovisual e tecnologia</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl lg:text-7xl font-bold text-white leading-[1.02] tracking-tight max-w-4xl">
+                    Automação para toda a empresa. <span class="text-cantaloupe">Marketing e conteúdo para crescer.</span>
+                </h1>
+
+                <p class="intro-reveal max-w-2xl text-base sm:text-lg text-gray-300 mt-6 leading-relaxed font-normal">
+                    A Foco Digital conecta marketing, audiovisual e automação para simplificar a operação inteira: do primeiro atendimento às vendas, ao estoque, financeiro e à entrega. Cada fluxo é desenhado para a realidade e os sistemas da sua empresa.
+                </p>
+
+                <div class="intro-reveal mt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <a href="https://wa.me/5535998444212?text=Olá!%20Quero%20conversar%20sobre%20como%20divulgar%20minha%20empresa." 
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="w-full sm:w-auto bg-cantaloupe hover:bg-orange-600 text-night font-inter font-black px-8 py-4 rounded-xl text-sm sm:text-base tracking-wide flex items-center justify-center space-x-3 transition-all">
+                        <span>CONVERSAR SOBRE MEU NEGÓCIO</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+
+                    <button onclick="switchView('audiovisual')" class="w-full sm:w-auto glass-panel hover:border-electric text-electric hover:text-white px-8 py-4 rounded-xl text-sm sm:text-base font-raleway font-bold transition-all">
+                        Conhecer produção audiovisual
+                    </button>
+                    </div>
+                    </div>
+
+                    <div class="hero-art-col relative z-10" aria-hidden="true">
+                        <div class="focus-art">
+                            <div class="focus-video-frame">
+                                <video id="homeMotionVideo" class="focus-home-video" autoplay muted loop playsinline preload="metadata" poster="media/videos/entrada-foco-digital-poster.png" data-site-motion data-motion-view="home" data-motion-visible="false" tabindex="-1">
+                                    <source src="media/videos/entrada-foco-digital.mp4" type="video/mp4">
+                                </video>
+                                <span class="focus-video-badge"><i></i>Marca em movimento</span>
+                                <div class="focus-video-caption">
+                                    <div><strong>Comunicação que move a operação.</strong><span>Motion 3D · automação · crescimento</span></div>
+                                    <span class="focus-video-index">FOCO / 360°</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARDS DE ENTRADA PARA PÁGINAS DEDICADAS -->
+                <div class="mt-12 lg:mt-16 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 text-left">
+                    
+                    <!-- CARD PÁGINA AUDIOVISUAL -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between group">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-cantaloupe/20 border border-cantaloupe flex items-center justify-center mb-6 text-cantaloupe shadow-glow-orange">
+                                <i data-lucide="video" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-2xl font-raleway font-extrabold text-white mb-1">Audiovisual & Motion</h2>
+                            <p class="text-xs text-cantaloupe font-mono uppercase tracking-wider mb-4">Fotos 4K, Motion 3D e VFX</p>
+                            <p class="text-sm font-garamond text-gray-300 leading-relaxed mb-6">
+                                Fotos e vídeos de produtos e serviços, preparados para redes sociais, páginas de venda e campanhas.
+                            </p>
+                        </div>
+                        <button onclick="switchView('audiovisual')" class="w-full py-3 px-4 rounded-xl bg-night border border-cantaloupe/40 hover:bg-cantaloupe text-cantaloupe hover:text-night font-inter font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2">
+                            <span>Saber Mais no Audiovisual</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- CARD PÁGINA TECNOLOGIA -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between group">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-electric/20 border border-electric flex items-center justify-center mb-6 text-electric shadow-glow-blue">
+                                <i data-lucide="cpu" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-2xl font-raleway font-extrabold text-white mb-1">Tecnologia & PDV</h2>
+                            <p class="text-xs text-electric font-mono uppercase tracking-wider mb-4">Web, Terminal Caixa e Dashboards</p>
+                            <p class="text-sm font-garamond text-gray-300 leading-relaxed mb-6">
+                                Sistemas de caixa, painéis de controle de margem e sites rápidos, adaptados à rotina da empresa.
+                            </p>
+                        </div>
+                        <button onclick="switchView('tecnologia')" class="w-full py-3 px-4 rounded-xl bg-night border border-electric/40 hover:bg-electric text-electric hover:text-white font-inter font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2">
+                            <span>Testar Simulador PDV</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- CARD PÁGINA MARKETING -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between group">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-cantaloupe/20 border border-cantaloupe flex items-center justify-center mb-6 text-cantaloupe shadow-glow-orange">
+                                <i data-lucide="trending-up" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-2xl font-raleway font-extrabold text-white mb-1">Marketing & Automação</h2>
+                            <p class="text-xs text-cantaloupe font-mono uppercase tracking-wider mb-4">Anúncios, atendimento e agentes de IA</p>
+                            <p class="text-sm font-garamond text-gray-300 leading-relaxed mb-6">
+                                Automação para conectar atendimento, vendas, estoque, financeiro e logística, com integrações definidas para cada operação.
+                            </p>
+                        </div>
+                        <button onclick="switchView('marketing')" class="w-full py-3 px-4 rounded-xl bg-night border border-cantaloupe/40 hover:bg-cantaloupe text-cantaloupe hover:text-night font-inter font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2">
+                            <span>Conhecer marketing e IA</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                    <!-- CARD PÁGINA EQUIPE INTEGRADA -->
+                    <div class="glass-card p-8 rounded-3xl relative flex flex-col justify-between group">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-electric/20 border border-electric flex items-center justify-center mb-6 text-electric shadow-glow-blue">
+                                <i data-lucide="users-round" class="w-6 h-6"></i>
+                            </div>
+                            <h2 class="text-2xl font-raleway font-extrabold text-white mb-1">Equipe Integrada</h2>
+                            <p class="text-xs text-electric font-mono uppercase tracking-wider mb-4">Operação, marketing e tecnologia</p>
+                            <p class="text-sm font-garamond text-gray-300 leading-relaxed mb-6">Uma parceira para conectar tarefas, canais e ferramentas às prioridades da sua empresa.</p>
+                        </div>
+                        <button onclick="switchView('equipe')" class="w-full py-3 px-4 rounded-xl bg-night border border-electric/40 hover:bg-electric text-electric hover:text-white font-inter font-bold text-xs uppercase tracking-wider transition-all flex items-center justify-center space-x-2">
+                            <span>Ver como trabalhamos juntos</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- DIFERENCIAL DIAGNÓSTICO COM COMBINAÇÕES DE FONTES -->
+                <div class="mt-20 glass-panel p-8 sm:p-12 rounded-3xl border border-electric/30 text-left">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div>
+                            <span class="text-xs font-raleway font-bold text-electric uppercase tracking-widest">O Método Foco Digital</span>
+                            <h3 class="text-3xl font-lato font-black text-white mt-2 mb-4">Comunicação e operação trabalhando juntas.</h3>
+                            <p class="text-base font-garamond text-gray-300 leading-relaxed mb-6">
+                                Cada empresa tem necessidades diferentes. A Foco Digital combina <strong class="text-cantaloupe font-inter font-bold">conteúdo e divulgação</strong> com <strong class="text-electric font-inter font-bold">ferramentas para organizar as vendas</strong>, conforme o momento do negócio.
+                            </p>
+                            <div class="space-y-3 font-raleway">
+                                <div class="flex items-center space-x-3 text-xs font-bold text-gray-200">
+                                    <div class="w-6 h-6 rounded-full bg-cantaloupe/20 text-cantaloupe flex items-center justify-center font-bold">1</div>
+                                    <span>Conversa inicial: entendemos o momento do seu negócio</span>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs font-bold text-gray-200">
+                                    <div class="w-6 h-6 rounded-full bg-electric/20 text-electric flex items-center justify-center font-bold">2</div>
+                                    <span>Produção Sob Medida: Vídeos, Fotos, Web e PDV integrados</span>
+                                </div>
+                                <div class="flex items-center space-x-3 text-xs font-bold text-gray-200">
+                                    <div class="w-6 h-6 rounded-full bg-cantaloupe/20 text-cantaloupe flex items-center justify-center font-bold">3</div>
+                                <span>Campanhas: acompanhe contatos e resultados</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card-orange p-6 rounded-2xl border border-cantaloupe/30 text-center space-y-4">
+                            <i data-lucide="headset" class="w-10 h-10 text-cantaloupe mx-auto"></i>
+                            <h4 class="text-xl font-lato font-black text-white">Converse com a equipe</h4>
+                            <p class="text-xs font-garamond text-gray-200 italic">
+                                Conte um pouco sobre a sua empresa. A gente conversa sobre os próximos passos, sem custo.
+                            </p>
+                            <a href="https://wa.me/5535998444212?text=Olá!%20Quero%20conversar%20sobre%20a%20minha%20empresa." 
+                               target="_blank"
+                               class="inline-block w-full py-3 bg-cantaloupe hover:bg-orange-600 text-night font-inter font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-glow-orange">
+                                Vamos conversar pelo WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PÁGINA 2: AUDIOVISUAL & MOTION GRAPHICS -->
+        <!-- ========================================== -->
+        <div id="view-audiovisual" class="page-view">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- HEADER DEDICADO -->
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-cantaloupe/40 bg-cantaloupe/10 text-cantaloupe text-xs font-bold uppercase tracking-widest mb-3">
+                        <i data-lucide="video" class="w-3 h-3"></i>
+                        <span>Produção audiovisual</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-black text-white uppercase tracking-tight">
+                        Audiovisual & <span class="text-cantaloupe">Motion 3D</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm sm:text-base mt-4 leading-relaxed">
+                        Produção de fotos, vídeos e motion para apresentar seus produtos com clareza e dar consistência à comunicação da sua marca.
+                    </p>
+                </div>
+
+                <!-- PAINEL TÉCNICO AUDIOVISUAL & EQUALIZADOR -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-12">
+                    
+                    <!-- VÍDEO DE ENTRADA E REEL INTERATIVO -->
+                    <div class="lg:col-span-7 glass-card p-5 sm:p-7 rounded-3xl border border-electric/30 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-3 pb-4 mb-5 border-b border-electric/20">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-xl bg-cantaloupe/15 border border-cantaloupe/40 flex items-center justify-center text-cantaloupe">
+                                        <i data-lucide="clapperboard" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-white font-bold text-sm">Assista à Foco em movimento</h3>
+                                        <p class="text-[11px] text-gray-400">Motion 3D + automação em um só filme</p>
+                                    </div>
+                                </div>
+                                <span class="text-[11px] text-gray-300 border border-white/10 rounded-full px-3 py-1">22,9 s</span>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed mb-4">
+                                Dê o play para ver a abertura 3D se transformar em uma operação conectada. O vídeo abre em tela cheia e fecha sozinho no final.
+                            </p>
+                            <button type="button" class="showcase-preview rounded-2xl border border-white/10" onclick="openShowreel(0)" aria-label="Assistir ao filme da Foco Digital em tela cheia">
+                                <img src="media/videos/entrada-foco-digital-poster.png" alt="" loading="lazy">
+                                <span class="showcase-preview-label">FOCO DIGITAL · FILME DE ENTRADA</span>
+                                <span class="showcase-preview-play"><i data-lucide="play" class="w-4 h-4 fill-current"></i>Assista ao vídeo</span>
+                            </button>
+                            <div class="flex flex-wrap items-center justify-between gap-3 mt-3 min-h-10">
+                                <span class="text-[10px] text-gray-400 font-mono uppercase tracking-wider">Reprodução completa · tela cheia</span>
+                                <button id="showreelNextButton" data-showreel-next type="button" class="showreel-next hidden rounded-full px-4 py-2 text-xs font-extrabold transition-colors" onclick="watchNextVideo()">Veja outro</button>
+                            </div>
+                        </div>
+                        <a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20planejar%20um%20v%C3%ADdeo%20ou%20motion%20para%20minha%20empresa."
+                           target="_blank" rel="noopener noreferrer"
+                           class="w-full mt-4 py-3.5 bg-cantaloupe hover:bg-orange-600 text-night font-black rounded-xl text-xs uppercase tracking-wider text-center transition-all shadow-glow-orange block">
+                            Planejar meu vídeo ou motion
+                        </a>
+                    </div>
+                    <!-- RECURSOS ENTREGÁVEIS AUDIOVISUAIS -->
+                    <div class="lg:col-span-5 space-y-4">
+                        <div class="glass-card p-5 rounded-2xl border border-electric/20">
+                            <div class="flex items-center space-x-3 text-cantaloupe mb-2">
+                                <i data-lucide="camera" class="w-5 h-5"></i>
+                                <h3 class="text-sm font-bold text-white">Fotografia de Produtos & Retratos 4K</h3>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Ensaios para cardápios, e-commerce e fotos de posicionamento de autoridade profissional.
+                            </p>
+                        </div>
+
+                        <div class="glass-card p-5 rounded-2xl border border-electric/20">
+                            <div class="flex items-center space-x-3 text-electric mb-2">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                                <h3 class="text-sm font-bold text-white">Cortes Dinâmicos para Reels & TikTok</h3>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Edição acelerada, legendas animadas, zooms estratégicos e efeitos sonoros SFX para retenção.
+                            </p>
+                        </div>
+
+                        <div class="glass-card p-5 rounded-2xl border border-electric/20">
+                            <div class="flex items-center space-x-3 text-cantaloupe mb-2">
+                                <i data-lucide="layers" class="w-5 h-5"></i>
+                                <h3 class="text-sm font-bold text-white">Animação Logo 3D & Vinhetas</h3>
+                            </div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Transformamos a sua marca em um elemento tridimensional com efeitos de iluminação futurista.
+                            </p>
+                        </div>
+
+                        <div class="glass-card-orange p-5 rounded-2xl border border-cantaloupe/40 text-center">
+                            <span class="text-xs font-mono font-bold text-cantaloupe uppercase">Dúvidas sobre o formato?</span>
+                            <p class="text-xs text-gray-200 mt-1 mb-3">Produzimos no formato exato da sua necessidade (16:9, 9:16 ou 1:1).</p>
+                            <a href="tel:35998444212" class="text-xs font-black text-white hover:underline flex items-center justify-center space-x-1">
+                                <i data-lucide="phone" class="w-3.5 h-3.5 text-cantaloupe"></i>
+                                <span>Ligar para (35) 99844-4212</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+                <section class="mt-20" aria-labelledby="motion-showcase-title">
+                    <div class="max-w-3xl mb-8">
+                        <span class="text-xs font-mono font-bold uppercase tracking-[.2em] text-cantaloupe">Da ideia à experiência</span>
+                        <h2 id="motion-showcase-title" class="text-3xl sm:text-5xl font-black text-white mt-3">Veja a Foco em <span class="text-cantaloupe">movimento.</span></h2>
+                        <p class="text-sm sm:text-base text-gray-300 mt-4 leading-relaxed">Peças conceito para mostrar como explicamos uma operação automatizada e damos presença visual a uma marca. Cada projeto pode ganhar roteiro, linguagem e formato próprios.</p>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <article class="showcase-video rounded-3xl overflow-hidden">
+                            <button type="button" class="showcase-preview" onclick="openShowreel(1)" aria-label="Assistir ao vídeo sobre automação da empresa em tela cheia">
+                                <img src="media/videos/automacao-empresa-poster.png" alt="" loading="lazy">
+                                <span class="showcase-preview-label">ATENDIMENTO · PEDIDO · ENTREGA</span>
+                                <span class="showcase-preview-play"><i data-lucide="play" class="w-4 h-4 fill-current"></i>Assista ao vídeo</span>
+                            </button>
+                            <div class="p-5 sm:p-6">
+                                <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-electric"><i data-lucide="workflow" class="w-4 h-4"></i><span>Automação de ponta a ponta</span></div>
+                                <h3 class="text-xl font-bold text-white mt-2">Uma empresa inteira, conectada.</h3>
+                                <p class="text-sm text-gray-300 mt-2 leading-relaxed">Atendimento, consulta de estoque, PDV, pagamento e expedição em um fluxo demonstrativo. Integrações fiscais e operacionais dependem do sistema e do escopo de cada implantação.</p>
+                            </div>
+                        </article>
+                        <article class="showcase-video rounded-3xl overflow-hidden">
+                            <button type="button" class="showcase-preview" onclick="openShowreel(2)" aria-label="Assistir ao vídeo de motion 3D da Foco Digital em tela cheia">
+                                <img src="media/videos/motion-3d-foco-digital-poster.png" alt="" loading="lazy">
+                                <span class="showcase-preview-label">IDENTIDADE · PRODUTO · MOTION 3D</span>
+                                <span class="showcase-preview-play"><i data-lucide="play" class="w-4 h-4 fill-current"></i>Assista ao vídeo</span>
+                            </button>
+                            <div class="p-5 sm:p-6">
+                                <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-cantaloupe"><i data-lucide="box" class="w-4 h-4"></i><span>Motion 3D · peça conceito</span></div>
+                                <h3 class="text-xl font-bold text-white mt-2">Uma marca com dimensão.</h3>
+                                <p class="text-sm text-gray-300 mt-2 leading-relaxed">Composição 3D para apresentar identidade, produto ou serviço em vídeos de campanha, telas de evento e conteúdo para redes.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="mt-8 glass-panel p-6 sm:p-8 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border border-cantaloupe/25">
+                        <div><h3 class="text-xl font-bold text-white">Quer uma demonstração para a sua operação?</h3><p class="text-sm text-gray-300 mt-1">Mapeamos os processos, integrações e oportunidades antes de propor o projeto.</p></div>
+                        <a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20uma%20demonstra%C3%A7%C3%A3o%20de%20automa%C3%A7%C3%A3o%20e%20motion%20para%20minha%20empresa." target="_blank" rel="noopener noreferrer" class="inline-flex shrink-0 items-center gap-2 bg-cantaloupe hover:bg-orange-600 text-night font-black px-6 py-3 rounded-xl text-xs uppercase tracking-wider transition-colors"><span>Planejar meu projeto</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+                    </div>
+                </section>
+
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PÁGINA 3: TECNOLOGIA, WEB & SISTEMAS PDV -->
+        <!-- ========================================== -->
+        <div id="view-tecnologia" class="page-view">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- HEADER DEDICADO -->
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-electric/40 bg-electric/10 text-electric text-xs font-bold uppercase tracking-widest mb-3">
+                        <i data-lucide="cpu" class="w-3 h-3"></i>
+                        <span>Sistemas para o dia a dia</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-black text-white uppercase tracking-tight">
+                        Tecnologia & <span class="text-electric">Sistemas PDV</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm sm:text-base mt-4 leading-relaxed">
+                        Desenvolvimento sob medida de Terminais de Caixa PDV, Websites de Alta Performance e Dashboards de Faturamento em tempo real.
+                    </p>
+                </div>
+
+                <!-- SIMULADOR INTERATIVO DE TERMINAL CAIXA PDV -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+                    
+                    <!-- TERMINAL SELEÇÃO DE PRODUTOS -->
+                    <div class="lg:col-span-7 glass-card p-6 sm:p-8 rounded-3xl border border-electric/30">
+                        <div class="flex items-center justify-between pb-4 mb-6 border-b border-electric/20">
+                            <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
+                                <i data-lucide="shopping-bag" class="w-4 h-4 text-cantaloupe"></i>
+                                <span>Simulador de Caixa PDV Foco Digital</span>
+                            </span>
+                            <span class="text-[10px] font-mono bg-electric/20 text-electric px-2 py-0.5 rounded uppercase">Terminal de exemplo</span>
+                        </div>
+
+                        <p class="text-xs text-gray-300 mb-4">
+                            Adicione produtos, ajuste quantidades, informe o cliente e escolha como a venda será recebida.
+                        </p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <button onclick="addPosItem('Combo X-Tudo Gourmet', 38.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Combo X-Tudo</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 38,00</div>
+                            </button>
+                            <button onclick="addPosItem('Pizza Artesanal P', 45.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Pizza Artesanal P</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 45,00</div>
+                            </button>
+                            <button onclick="addPosItem('Refrigerante Lata', 7.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Refri Lata</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 7,00</div>
+                            </button>
+                            <button onclick="addPosItem('Sobremesa Brownie', 16.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Brownie Especial</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 16,00</div>
+                            </button>
+                            <button onclick="addPosItem('Suco Natural 500ml', 12.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Suco Natural</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 12,00</div>
+                            </button>
+                            <button onclick="addPosItem('Taxa Entrega Própria', 5.00)" class="p-3.5 rounded-xl bg-night border border-electric/20 hover:border-cantaloupe text-left transition-all">
+                                <div class="text-xs font-bold text-white mb-1">Taxa Entrega</div>
+                                <div class="text-xs font-mono text-cantaloupe font-bold">R$ 5,00</div>
+                            </button>
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-electric/20 flex items-center justify-between">
+                            <span class="text-xs text-gray-400">Catálogo de demonstração</span>
+                            <button onclick="clearPosCart()" class="text-xs text-cantaloupe hover:underline font-bold">Limpar Cupom</button>
+                        </div>
+                    </div>
+
+                    <!-- EXIBIÇÃO DO CUPOM E CHECKOUT -->
+                    <div class="lg:col-span-5 glass-card-orange p-6 sm:p-8 rounded-3xl border border-cantaloupe/40 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between pb-3 border-b border-cantaloupe/30 mb-4">
+                                <div class="flex items-center space-x-2">
+                                    <i data-lucide="receipt" class="w-4 h-4 text-cantaloupe"></i>
+                                    <span class="text-xs font-bold text-white uppercase tracking-wider">Cupom de Caixa #882</span>
+                                </div>
+                                <span class="text-[10px] font-mono text-electric font-bold">SIMULAÇÃO DE VENDA</span>
+                            </div>
+
+                            <div id="posCartList" class="space-y-2 min-h-[140px] max-h-[180px] overflow-y-auto pr-1 text-xs">
+                                <div class="text-gray-400 text-center py-10 italic">Nenhum item adicionado ao caixa ainda.</div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                                <label class="text-[10px] text-gray-400 uppercase tracking-wide">Cliente
+                                    <input id="posCustomer" class="mt-1 w-full bg-night border border-white/10 rounded-lg px-3 py-2 text-xs text-white normal-case" placeholder="Nome do cliente">
+                                </label>
+                                <label class="text-[10px] text-gray-400 uppercase tracking-wide">Pagamento
+                                    <select id="posPaymentMethod" class="mt-1 w-full bg-night border border-white/10 rounded-lg px-3 py-2 text-xs text-white normal-case">
+                                        <option>PIX</option><option>Cartão</option><option>Dinheiro</option>
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div class="mt-4 pt-4 border-t border-cantaloupe/30 space-y-2 font-mono">
+                                <div class="flex justify-between text-xs text-gray-300">
+                                    <span>SUBTOTAL:</span>
+                                    <span id="posSubtotal" class="font-bold text-white">R$ 0,00</span>
+                                </div>
+                                <div class="flex justify-between text-xs text-electric">
+                                    <span>OBSERVAÇÃO:</span>
+                                    <span class="font-bold">TAXAS EXTERNAS NÃO SIMULADAS</span>
+                                </div>
+                                <div class="flex justify-between text-sm text-cantaloupe font-black pt-2 border-t border-cantaloupe/20">
+                                    <span>TOTAL DA VENDA:</span>
+                                    <span id="posTotal">R$ 0,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p id="posStatus" class="text-xs text-gray-300 mt-4 min-h-5" aria-live="polite">Nenhuma venda registrada nesta demonstração.</p>
+                        <button type="button" onclick="checkoutPos()" class="w-full mt-2 bg-cantaloupe hover:bg-orange-600 text-night font-black py-3.5 rounded-xl text-xs uppercase tracking-wider text-center transition-all shadow-glow-orange block">
+                            Registrar venda demonstrativa
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- DASHBOARD DE VENDAS COMPLEMENTAR -->
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-electric/30">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-xl font-bold text-white flex items-center gap-2"><i data-lucide="chart-no-axes-combined" class="w-5 h-5 text-electric"></i>Resumo de vendas</h3>
+                            <p class="text-xs text-gray-400 mt-2">Demonstração ilustrativa. Lucro, estoque e gargalos reais exigem integração com PDV, financeiro e histórico de atendimento.</p>
+                        </div>
+                        <div class="flex gap-2" role="group" aria-label="Período do relatório">
+                            <button type="button" class="report-period border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300" data-period="today" aria-pressed="true" onclick="setReportPeriod('today')">Hoje</button>
+                            <button type="button" class="report-period border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300" data-period="week" aria-pressed="false" onclick="setReportPeriod('week')">7 dias</button>
+                            <button type="button" class="report-period border border-white/10 rounded-lg px-3 py-2 text-xs text-gray-300" data-period="month" aria-pressed="false" onclick="setReportPeriod('month')">30 dias</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-7">
+                        <div class="bg-night/90 p-4 rounded-xl border border-white/8"><span class="text-[10px] text-gray-400 uppercase">Vendas brutas</span><div id="reportRevenue" class="text-xl font-bold text-white mt-1">R$ 5.420,00</div></div>
+                        <div class="bg-night/90 p-4 rounded-xl border border-white/8"><span class="text-[10px] text-gray-400 uppercase">Pedidos</span><div id="reportOrders" class="text-xl font-bold text-electric mt-1">112</div></div>
+                        <div class="bg-night/90 p-4 rounded-xl border border-white/8"><span class="text-[10px] text-gray-400 uppercase">Ticket médio</span><div id="reportAverage" class="text-xl font-bold text-white mt-1">R$ 48,39</div></div>
+                        <div class="bg-night/90 p-4 rounded-xl border border-white/8"><span class="text-[10px] text-gray-400 uppercase">Margem estimada</span><div id="reportMargin" class="text-xl font-bold text-cantaloupe mt-1">31,8%</div></div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 mb-7">
+                        <div class="bg-night/90 p-4 rounded-xl border border-electric/15"><span class="text-[10px] text-gray-400 uppercase">Lucro líquido estimado</span><div id="reportProfit" class="text-xl font-bold text-electric mt-1">R$ 1.210,00</div><p class="text-[10px] text-gray-500 mt-1">Depois dos custos operacionais registrados</p></div>
+                        <div class="bg-night/90 p-4 rounded-xl border border-white/8"><span class="text-[10px] text-gray-400 uppercase">Compras de estoque</span><div id="reportStockSpend" class="text-xl font-bold text-white mt-1">R$ 1.840,00</div><p class="text-[10px] text-gray-500 mt-1">Saídas lançadas no período</p></div>
+                        <div class="bg-night/90 p-4 rounded-xl border border-cantaloupe/15"><span class="text-[10px] text-gray-400 uppercase">Vendas em risco identificadas</span><div id="reportBottlenecks" class="text-xl font-bold text-cantaloupe mt-1">46 oportunidades</div><p id="reportBottleneckDetail" class="text-[10px] text-gray-500 mt-1">Resposta lenta · estoque indisponível · pagamento pendente</p></div>
+                    </div>
+                    <div class="flex items-end justify-between gap-3 border-b border-white/10 px-2" id="reportChart" aria-label="Gráfico demonstrativo de vendas"></div>
+                    <p id="reportChartCaption" class="text-[10px] text-gray-500 text-right mt-2">Vendas por hora · Hoje</p>
+                </div>
+
+                <section class="mt-12 glass-panel p-5 sm:p-8 rounded-3xl border border-electric/25" aria-labelledby="pdv-video-title">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-7 items-center">
+                        <div class="lg:col-span-5">
+                            <span class="text-[10px] font-mono font-bold uppercase tracking-[.18em] text-electric">PDV + painel financeiro</span>
+                            <h2 id="pdv-video-title" class="text-2xl sm:text-4xl font-black text-white mt-3">Do caixa ao resultado, em um só olhar.</h2>
+                            <p class="text-sm text-gray-300 leading-relaxed mt-4">Assista ao pedido entrando no PDV e ao painel organizando vendas, lucro estimado, compras de estoque e pontos de perda.</p>
+                            <p class="text-[11px] text-gray-500 mt-4">Vídeo ilustrativo: dados e integrações variam conforme a operação.</p>
+                        </div>
+                        <div class="lg:col-span-7 showcase-video rounded-2xl overflow-hidden">
+                            <button type="button" class="showcase-preview" onclick="openShowreel(3)" aria-label="Assistir ao vídeo do painel PDV e financeiro em tela cheia">
+                                <img src="media/videos/pdv-painel-operacao-poster.png" alt="" loading="lazy">
+                                <span class="showcase-preview-label">CAIXA · FINANCEIRO · GARGALOS</span>
+                                <span class="showcase-preview-play"><i data-lucide="play" class="w-4 h-4 fill-current"></i>Assistir ao vídeo</span>
+                            </button>
+                            <div class="flex items-center justify-between gap-3 p-4 sm:px-5">
+                                <span class="text-xs text-gray-300">PDV & painel de operação</span>
+                                <button id="techShowreelNextButton" data-showreel-next type="button" class="showreel-next hidden rounded-full px-4 py-2 text-xs font-extrabold transition-colors" onclick="watchNextVideo()">Veja outro</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </section>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- PÁGINA 4: MARKETING & ESCALA COMERCIAL -->
+        <!-- ========================================== -->
+        <div id="view-marketing" class="page-view">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- HEADER DEDICADO -->
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-cantaloupe/40 bg-cantaloupe/10 text-cantaloupe text-xs font-bold uppercase tracking-widest mb-3">
+                        <i data-lucide="trending-up" class="w-3 h-3"></i>
+                        <span>Divulgação e anúncios</span>
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-black text-white uppercase tracking-tight">
+                        Marketing, <span class="text-cantaloupe">IA & Anúncios</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm sm:text-base mt-4 leading-relaxed">
+                        Campanhas para atrair clientes e agentes que atendem, consultam sistemas e conduzem pedidos no WhatsApp — inclusive fora do horário comercial.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+                    
+                    <div class="glass-card p-8 rounded-3xl border border-electric/30">
+                        <div class="w-10 h-10 rounded-xl bg-electric/20 text-electric flex items-center justify-center font-bold mb-4">
+                            <i data-lucide="target" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Anúncios para sua região</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4">
+                            Campanhas direcionadas a públicos e regiões relevantes para o seu negócio.
+                        </p>
+                        <span class="text-[11px] text-cantaloupe font-mono font-bold">Planejamento por público e região</span>
+                    </div>
+
+                    <div class="glass-card-orange p-8 rounded-3xl border border-cantaloupe/40">
+                        <div class="w-10 h-10 rounded-xl bg-cantaloupe/20 text-cantaloupe flex items-center justify-center font-bold mb-4">
+                            <i data-lucide="message-square" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Campanhas Direto para WhatsApp</h3>
+                        <p class="text-xs text-gray-200 leading-relaxed mb-4">
+                            O cliente clica no anúncio e inicia uma conversa com sua equipe de vendas ou robô em segundos.
+                        </p>
+                        <span class="text-[11px] text-electric font-mono font-bold">Contato direto com sua equipe</span>
+                    </div>
+
+                    <div class="glass-card p-8 rounded-3xl border border-electric/30">
+                        <div class="w-10 h-10 rounded-xl bg-electric/20 text-electric flex items-center justify-center font-bold mb-4">
+                            <i data-lucide="pie-chart" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2">Acompanhamento de campanhas</h3>
+                        <p class="text-xs text-gray-300 leading-relaxed mb-4">
+                            Acompanhe investimento, contatos e resultados para decidir os próximos passos.
+                        </p>
+                        <span class="text-[11px] text-cantaloupe font-mono font-bold">Relatórios claros e periódicos</span>
+                    </div>
+
+                </div>
+
+                <div data-motion-flow class="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    <div class="lg:col-span-5">
+                        <span class="text-xs font-bold text-electric uppercase tracking-widest">Agentes de IA para WhatsApp</span>
+                        <h2 class="text-3xl sm:text-4xl font-bold text-white mt-3 mb-5">Menos trabalho repetitivo. Mais pedidos atendidos, até fora do expediente.</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            Uma equipe de atendimento custa salários, encargos, treinamento e reposição. Um agente de IA pode assumir parte das tarefas repetitivas por um custo mensal previsível, responder em segundos, 24 horas por dia, e atender várias conversas ao mesmo tempo. Compare o custo total da operação com o investimento da implantação: a economia depende do volume e das integrações do seu negócio.
+                        </p>
+                        <p class="text-sm text-gray-200 leading-relaxed mb-6"><strong class="text-cantaloupe">Respondeu primeiro, teve a chance de vender.</strong> No WhatsApp, a demora para conferir estoque ou montar uma cotação pode custar o pedido. Com acesso autorizado ao sistema da loja, o agente consulta o saldo atualizado e informa preço rapidamente, sem deixar o cliente esperando pela equipe.</p>
+                        <div class="space-y-4 text-sm text-gray-200">
+                            <div class="flex gap-3"><span class="text-cantaloupe font-bold">01</span><span><strong>PDV:</strong> consulta estoque e preço, registra o pedido e inicia cobrança por PIX ou link de pagamento.</span></div>
+                            <div class="flex gap-3"><span class="text-electric font-bold">02</span><span><strong>Fiscal:</strong> após as validações da venda, solicita NFC-e pelo sistema fiscal autorizado da empresa.</span></div>
+                            <div class="flex gap-3"><span class="text-cantaloupe font-bold">03</span><span><strong>Entrega:</strong> confirma pagamento pelo provedor e encaminha a ordem à logística ou ao motoboy conectado.</span></div>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-6">Fluxo possível após integração e homologação. Estoque, pagamento, emissão fiscal e despacho dependem dos sistemas, permissões e regras operacionais da empresa; exceções podem ser encaminhadas a uma pessoa.</p>
+                        <a href="#calculadora-ia" class="inline-flex items-center gap-2 mt-6 text-sm font-bold text-cantaloupe hover:text-white transition-colors">Calcular quanto minha empresa economiza com IA <i data-lucide="arrow-down" class="w-4 h-4"></i></a>
+                    </div>
+
+                    <div class="lg:col-span-7 chat-shell rounded-2xl overflow-hidden shadow-2xl">
+                        <div class="flex items-center justify-between gap-4 px-5 py-4 border-b border-white/10">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-electric/15 text-electric grid place-items-center"><i data-lucide="bot" class="w-5 h-5"></i></div>
+                                <div><h3 class="text-sm font-bold text-white">Atendimento · Casa & Obra</h3><p class="text-[10px] text-gray-400">Simulação de conversa no WhatsApp</p></div>
+                            </div>
+                            <span class="text-[9px] sm:text-[10px] font-mono text-cantaloupe border border-cantaloupe/20 rounded-full px-2.5 py-1">DADOS DE DEMONSTRAÇÃO</span>
+                        </div>
+                        <div id="aiChatMessages" class="chat-feed" aria-live="polite" aria-label="Conversa demonstrativa">
+                            <div class="chat-bubble customer">Bom dia! Tem 20 sacos de cimento CP II? Quanto fica?</div>
+                            <div class="chat-bubble agent">Bom dia! Consultei o estoque demonstrativo: temos 48 sacos de cimento CP II de 50 kg. Cada um está por R$ 36,90. Para 20 unidades, o subtotal fica em R$ 738,00. Quer incluir mais algum material ou consultar a entrega?</div>
+                        </div>
+                        <div class="chat-actions" aria-label="Ações demonstrativas">
+                            <button type="button" onclick="askConstructionAgent('Tem bloco 14?')">Consultar blocos</button>
+                            <button type="button" onclick="simulateConstructionPayment()">Simular confirmação Pix</button>
+                            <button type="button" onclick="simulateConstructionDelivery()">Acionar entrega (demo)</button>
+                            <button type="button" onclick="resetConstructionChat()">Reiniciar conversa</button>
+                        </div>
+                        <form id="aiChatForm" class="chat-input-row">
+                            <input id="aiChatInput" type="text" placeholder="Pergunte sobre cimento, bloco, pagamento ou entrega…" aria-label="Escreva uma mensagem para o agente demonstrativo">
+                            <button type="submit" aria-label="Enviar mensagem"><i data-lucide="arrow-up" class="w-4 h-4"></i></button>
+                        </form>
+                        <p class="px-4 pb-4 text-[10px] text-gray-500">Simulação local: catálogo, saldo, cobrança e entrega são fictícios. Não consulta PDV, não emite NFC-e e não envia ordem ou mensagem real.</p>
+                    </div>
+                </div>
+
+                <div id="calculadora-ia" class="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-5">
+                        <span class="text-xs font-bold text-cantaloupe uppercase tracking-widest">Faça a conta da sua operação</span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-white mt-3 mb-3">Quanto custa manter o atendimento manual?</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">Some salário, encargos e outros custos mensais por pessoa. A estimativa mostra o custo atual informado por você; a economia real só pode ser calculada depois de comparar esse valor com a proposta e o escopo de automação.</p>
+                    </div>
+                    <div class="lg:col-span-7 glass-card p-6 sm:p-8 rounded-3xl border border-cantaloupe/30">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <label class="text-xs text-gray-300">Pessoas no atendimento/caixa<input id="staffCount" type="number" min="1" max="500" value="3" class="mt-2 w-full bg-night border border-white/10 rounded-xl px-4 py-3 text-white" inputmode="numeric"></label>
+                            <label class="text-xs text-gray-300">Custo mensal total por pessoa (R$)<input id="staffCost" type="number" min="0" step="100" value="3500" class="mt-2 w-full bg-night border border-white/10 rounded-xl px-4 py-3 text-white" inputmode="decimal"></label>
+                            <label class="text-xs text-gray-300">Conversas recebidas por mês<input id="monthlyChats" type="number" min="0" step="50" value="1200" class="mt-2 w-full bg-night border border-white/10 rounded-xl px-4 py-3 text-white" inputmode="numeric"></label>
+                        </div>
+                        <div class="mt-5 p-5 rounded-2xl bg-night border border-white/10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                            <div><span class="text-[10px] text-gray-400 uppercase tracking-widest">Custo mensal atual informado</span><div id="currentStaffCost" class="text-3xl font-black text-white mt-1" aria-live="polite">R$ 10.500,00</div><p id="chatVolumeSummary" class="text-xs text-gray-400 mt-1">1.200 conversas/mês</p></div>
+                            <a id="savingsWhatsApp" href="https://wa.me/5535998444212" target="_blank" rel="noopener noreferrer" class="inline-flex justify-center items-center gap-2 bg-cantaloupe hover:bg-orange-600 text-night font-black px-5 py-3 rounded-xl text-xs sm:text-sm transition-colors">Calcular quanto minha empresa economiza com IA <i data-lucide="arrow-up-right" class="w-4 h-4"></i></a>
+                        </div>
+                        <p class="text-[10px] text-gray-500 mt-3">Estimativa baseada apenas nos valores informados. Não representa economia garantida nem inclui o preço da solução.</p>
+                    </div>
+                </div>
+
+                <!-- CTA FINAL DE MARKETING -->
+                <div class="glass-panel p-8 sm:p-12 rounded-3xl border border-cantaloupe/40 text-center">
+                    <h3 class="text-2xl sm:text-4xl font-black text-white mb-4 uppercase">
+                        Simule a automação da sua loja no WhatsApp
+                    </h3>
+                    <p class="text-sm text-gray-300 max-w-xl mx-auto mb-6">
+                        Veja como atendimento, PDV, pagamento, emissão fiscal e entrega podem trabalhar juntos na sua operação.
+                    </p>
+                    <a href="https://wa.me/5535998444212?text=Olá!%20Quero%20simular%20uma%20automação%20para%20minha%20loja%20com%20WhatsApp%2C%20PDV%20e%20logística." 
+                       target="_blank"
+                       class="inline-flex items-center space-x-2 bg-cantaloupe hover:bg-orange-600 text-night font-black px-8 py-4 rounded-xl text-xs sm:text-sm tracking-wider uppercase transition-all">
+                        <i data-lucide="message-circle" class="w-5 h-5 fill-night"></i>
+                        <span>Simular automação para minha loja</span>
+                    </a>
+                </div>
+
+            </section>
+        </div>
+
+        <!-- PÁGINA 5: A FOCO DIGITAL COMO EQUIPE INTEGRADA -->
+        <div id="view-equipe" class="page-view">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                    <div class="lg:col-span-7">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-electric/35 bg-electric/10 text-electric text-xs font-bold uppercase tracking-widest mb-4">
+                            <i data-lucide="users-round" class="w-3.5 h-3.5"></i>
+                            <span>Uma parceira dentro da sua operação</span>
+                        </div>
+                        <h1 class="text-4xl sm:text-6xl font-black text-white leading-[1.05] tracking-tight">
+                            A Foco Digital <span class="text-cantaloupe">se integra à sua equipe.</span>
+                        </h1>
+                        <p class="text-base sm:text-lg text-gray-300 leading-relaxed mt-6 max-w-3xl">
+                            Atuamos lado a lado com quem conhece o negócio por dentro. Conectamos automação, gestão, marketing, conteúdo e tecnologia num plano feito para as prioridades da sua empresa.
+                        </p>
+                        <p class="text-sm sm:text-base text-gray-400 leading-relaxed mt-4 max-w-3xl">
+                            Da análise de faturamento e dos pontos onde as vendas se perdem à rotina diária de stories, feed e carrosséis, reunimos as frentes que ajudam sua equipe a trabalhar com mais clareza e menos retrabalho. Produzimos vídeos com linguagem de redes sociais e aplicamos tecnologias atuais à operação real do negócio.
+                        </p>
+                        <div class="flex flex-col sm:flex-row gap-3 mt-8">
+                            <a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20entender%20como%20a%20Foco%20Digital%20pode%20se%20integrar%20%C3%A0%20equipe%20da%20minha%20empresa."
+                               target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center justify-center gap-2 bg-cantaloupe hover:bg-orange-600 text-night font-black px-6 py-4 rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-colors">
+                                <span>Conversar sobre minha empresa</span><i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                            </a>
+                            <a href="#como-trabalhamos" class="inline-flex items-center justify-center gap-2 border border-white/15 hover:border-electric/60 text-white px-6 py-4 rounded-xl text-xs sm:text-sm font-bold transition-colors">
+                                <span>Ver como começamos</span><i data-lucide="arrow-down" class="w-4 h-4"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-5">
+                        <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-electric/25">
+                            <span class="text-[10px] font-mono font-bold uppercase tracking-[.18em] text-electric">Visão conectada do negócio</span>
+                            <h2 class="text-2xl font-black text-white mt-3 mb-6">Cada frente ajuda a próxima.</h2>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 rounded-xl border border-white/8 bg-night/70 p-3.5">
+                                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-cantaloupe/15 text-cantaloupe"><i data-lucide="message-circle" class="w-4 h-4"></i></span>
+                                    <div><strong class="block text-sm text-white">Atendimento</strong><span class="text-xs text-gray-400">Conversa vira oportunidade</span></div>
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4 text-gray-500 ml-auto"></i>
+                                </div>
+                                <div class="flex items-center gap-3 rounded-xl border border-white/8 bg-night/70 p-3.5">
+                                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-electric/15 text-electric"><i data-lucide="workflow" class="w-4 h-4"></i></span>
+                                    <div><strong class="block text-sm text-white">Operação</strong><span class="text-xs text-gray-400">Processos e sistemas se conectam</span></div>
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4 text-gray-500 ml-auto"></i>
+                                </div>
+                                <div class="flex items-center gap-3 rounded-xl border border-white/8 bg-night/70 p-3.5">
+                                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-cantaloupe/15 text-cantaloupe"><i data-lucide="chart-no-axes-combined" class="w-4 h-4"></i></span>
+                                    <div><strong class="block text-sm text-white">Gestão</strong><span class="text-xs text-gray-400">Indicadores orientam as decisões</span></div>
+                                    <i data-lucide="arrow-down-right" class="w-4 h-4 text-gray-500 ml-auto"></i>
+                                </div>
+                                <div class="flex items-center gap-3 rounded-xl border border-white/8 bg-night/70 p-3.5">
+                                    <span class="grid place-items-center w-9 h-9 rounded-lg bg-electric/15 text-electric"><i data-lucide="megaphone" class="w-4 h-4"></i></span>
+                                    <div><strong class="block text-sm text-white">Marketing</strong><span class="text-xs text-gray-400">A marca mantém presença e atrai público</span></div>
+                                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-gray-500 ml-auto"></i>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-gray-500 mt-5">O desenho das integrações e a rotina de conteúdo dependem dos objetivos e dos sistemas da empresa.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="mt-16" aria-labelledby="equipe-frentes-title">
+                    <div class="max-w-3xl mb-7">
+                        <span class="text-xs font-mono font-bold uppercase tracking-[.18em] text-cantaloupe">Uma operação, várias especialidades</span>
+                        <h2 id="equipe-frentes-title" class="text-3xl sm:text-4xl font-black text-white mt-3">Apoio para o que sua empresa precisa agora.</h2>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <article class="glass-card p-6 rounded-2xl">
+                            <span class="grid place-items-center w-11 h-11 rounded-xl bg-cantaloupe/15 text-cantaloupe mb-5"><i data-lucide="bot" class="w-5 h-5"></i></span>
+                            <h3 class="text-lg font-extrabold text-white">Automação & atendimento</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed mt-3">Agentes e fluxos para responder, organizar pedidos e assumir tarefas repetitivas, com integrações definidas para cada operação.</p>
+                        </article>
+                        <article class="glass-card p-6 rounded-2xl">
+                            <span class="grid place-items-center w-11 h-11 rounded-xl bg-electric/15 text-electric mb-5"><i data-lucide="chart-no-axes-combined" class="w-5 h-5"></i></span>
+                            <h3 class="text-lg font-extrabold text-white">Faturamento & gestão</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed mt-3">Acompanhamento de vendas, custos e indicadores para encontrar gargalos e entender onde a operação está deixando oportunidades pelo caminho.</p>
+                        </article>
+                        <article class="glass-card p-6 rounded-2xl">
+                            <span class="grid place-items-center w-11 h-11 rounded-xl bg-cantaloupe/15 text-cantaloupe mb-5"><i data-lucide="clapperboard" class="w-5 h-5"></i></span>
+                            <h3 class="text-lg font-extrabold text-white">Marketing & conteúdo</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed mt-3">Campanhas, vídeos com linguagem de redes sociais e uma rotina de stories diários, publicações para feed e carrosséis.</p>
+                        </article>
+                        <article class="glass-card p-6 rounded-2xl">
+                            <span class="grid place-items-center w-11 h-11 rounded-xl bg-electric/15 text-electric mb-5"><i data-lucide="cpu" class="w-5 h-5"></i></span>
+                            <h3 class="text-lg font-extrabold text-white">Tecnologia & PDV</h3>
+                            <p class="text-sm text-gray-300 leading-relaxed mt-3">Sites, sistemas de caixa, painéis e integrações com tecnologias atuais para aproximar atendimento, vendas e operação.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section id="como-trabalhamos" class="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div class="lg:col-span-4">
+                        <span class="text-xs font-mono font-bold uppercase tracking-[.18em] text-electric">Uma parceria construída com a sua equipe</span>
+                        <h2 class="text-3xl font-black text-white mt-3">Começamos pelo que mais faz diferença.</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed mt-4">O plano combina pessoas, processos e ferramentas. A implantação avança conforme as prioridades e a capacidade de integração do negócio.</p>
+                    </div>
+                    <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <article class="glass-panel p-5 rounded-2xl border border-white/8">
+                            <span class="text-xs font-mono font-bold text-cantaloupe">01 / ENTENDER</span>
+                            <h3 class="text-base font-bold text-white mt-3">Mapeamos a rotina</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed mt-2">Conversamos com quem atende, vende e administra para identificar prioridades e gargalos.</p>
+                        </article>
+                        <article class="glass-panel p-5 rounded-2xl border border-white/8">
+                            <span class="text-xs font-mono font-bold text-electric">02 / PLANEJAR</span>
+                            <h3 class="text-base font-bold text-white mt-3">Definimos o próximo passo</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed mt-2">Organizamos escopo, canais, integrações e uma sequência viável para a equipe.</p>
+                        </article>
+                        <article class="glass-panel p-5 rounded-2xl border border-white/8">
+                            <span class="text-xs font-mono font-bold text-cantaloupe">03 / ACOMPANHAR</span>
+                            <h3 class="text-base font-bold text-white mt-3">Ajustamos com dados</h3>
+                            <p class="text-xs text-gray-400 leading-relaxed mt-2">Acompanhamos indicadores combinados e aprimoramos os fluxos conforme a operação evolui.</p>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="mt-14 glass-panel p-6 sm:p-9 rounded-3xl border border-cantaloupe/30 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div class="max-w-3xl">
+                        <span class="text-xs font-mono font-bold uppercase tracking-[.16em] text-cantaloupe">Resultado com contexto</span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white mt-2">Menos retrabalho. Mais espaço para crescer.</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed mt-3">O objetivo é reduzir desperdícios e custos desnecessários, melhorar a visibilidade sobre a operação e apoiar o aumento das vendas e do lucro. Os resultados dependem do cenário, do escopo e da execução de cada empresa.</p>
+                    </div>
+                    <a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20conversar%20sobre%20como%20a%20Foco%20Digital%20pode%20se%20integrar%20%C3%A0%20equipe%20da%20minha%20empresa."
+                       target="_blank" rel="noopener noreferrer"
+                       class="inline-flex shrink-0 items-center justify-center gap-2 bg-cantaloupe hover:bg-orange-600 text-night font-black px-6 py-4 rounded-xl text-xs sm:text-sm uppercase tracking-wider transition-colors">
+                        <span>Quero uma equipe conectada</span><i data-lucide="message-circle" class="w-4 h-4"></i>
+                    </a>
+                </section>
+            </section>
+        </div>
+    </main>
+
+    <!-- FOOTER DA AGÊNCIA COM TELEFONE E INFORMAÇÕES -->
+    <dialog id="showreelDialog" class="showreel-dialog" aria-modal="true" aria-labelledby="showreelDialogTitle">
+        <div class="showreel-dialog-top">
+            <div>
+                <span id="showreelDialogKicker" class="text-[10px] font-mono uppercase tracking-[.18em] text-cantaloupe">FOCO DIGITAL · VÍDEO</span>
+                <h2 id="showreelDialogTitle" class="showreel-dialog-title mt-1">Assista ao vídeo</h2>
+            </div>
+            <button type="button" class="showreel-dialog-close" onclick="closeShowreel()" aria-label="Fechar vídeo"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
+        <div class="showreel-dialog-stage">
+            <video id="showreelPlayer" controls playsinline preload="none" aria-describedby="showreelDialogDescription"></video>
+        </div>
+        <p id="showreelDialogDescription" class="w-full max-w-6xl mx-auto mt-3 text-xs text-gray-400" aria-live="polite"></p>
+    </dialog>
+
+    <footer class="relative z-10 border-t border-electric/20 py-8 bg-night/90 text-center text-xs text-gray-400">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-2">
+                <span class="font-black text-white">FOCO DIGITAL 360°</span>
+                <span class="text-cantaloupe">•</span>
+                <span class="text-gray-400">Agência Integrada de Marketing & Tecnologia</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="tel:35998444212" class="text-gray-300 hover:text-cantaloupe font-bold flex items-center space-x-1">
+                    <i data-lucide="phone" class="w-3.5 h-3.5 text-electric"></i>
+                    <span>(35) 99844-4212</span>
+                </a>
+                <a href="https://wa.me/5535998444212" target="_blank" class="text-gray-300 hover:text-cantaloupe font-bold flex items-center space-x-1">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5 text-cantaloupe"></i>
+                    <span>WhatsApp Direto</span>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGICA JS DE SWAP DE PÁGINAS, CANVAS AUDIOVISUAL E TERMINAL DE CAIXA -->
+    <script>
+        // CAMPO DE LUZ INTERATIVO: acompanha o cursor e o movimento da página.
+        function initMotionField() {
+            const canvas = document.getElementById('motionField');
+            const context = canvas?.getContext('2d', { alpha: true });
+            if (!canvas || !context) return;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const pointer = { x: 0.5, y: 0.45 };
+            const cursor = { x: 0.5, y: 0.45 };
+            const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            const lightScenes = {
+                home: { blue: 0.13, orange: 0.065 },
+                audiovisual: { blue: 0.09, orange: 0.105 },
+                tecnologia: { blue: 0.15, orange: 0.045 },
+                marketing: { blue: 0.11, orange: 0.09 },
+                equipe: { blue: 0.13, orange: 0.085 }
+            };
+            const ambient = { ...lightScenes.home };
+            const motes = Array.from({ length: window.innerWidth < 640 ? 22 : 42 }, (_, index) => ({
+                x: ((index * 67) % 101) / 100,
+                y: ((index * 37) % 97) / 100,
+                size: 0.7 + ((index * 13) % 14) / 10,
+                phase: index * 1.71,
+                speed: 0.08 + ((index * 7) % 10) / 100,
+                warm: index % 5 === 0
+            }));
+
+            let width = 0;
+            let height = 0;
+            let frame = 0;
+            let lastFrame = 0;
+
+            function resize() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = Math.round(width * dpr);
+                canvas.height = Math.round(height * dpr);
+                context.setTransform(dpr, 0, 0, dpr, 0, 0);
+                paint(performance.now() / 1000, true);
+            }
+
+            function paint(time, staticFrame = false) {
+                if (staticFrame) time = 0;
+                context.clearRect(0, 0, width, height);
+
+                const targetLight = lightScenes[document.body.dataset.view] || lightScenes.home;
+                const blend = reduceMotion ? 1 : 0.055;
+                ambient.blue += (targetLight.blue - ambient.blue) * blend;
+                ambient.orange += (targetLight.orange - ambient.orange) * blend;
+
+                const parallaxX = (cursor.x - 0.5) * 46;
+                const parallaxY = (cursor.y - 0.5) * 34;
+                const scrollDrift = Math.min(window.scrollY, 1800) * 0.025;
+                const glowX = width * (0.70 + (cursor.x - 0.5) * 0.12);
+                const glowY = height * (0.30 + (cursor.y - 0.5) * 0.1);
+
+                let glow = context.createRadialGradient(glowX, glowY, 0, glowX, glowY, Math.max(width, height) * 0.52);
+                glow.addColorStop(0, `rgba(59, 130, 246, ${ambient.blue})`);
+                glow.addColorStop(0.38, `rgba(59, 130, 246, ${ambient.blue * 0.29})`);
+                glow.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                context.fillStyle = glow;
+                context.fillRect(0, 0, width, height);
+
+                const warmX = width * (0.16 + (cursor.x - 0.5) * 0.06);
+                const warmY = height * 0.72 + parallaxY * 0.35;
+                glow = context.createRadialGradient(warmX, warmY, 0, warmX, warmY, Math.max(width, height) * 0.38);
+                glow.addColorStop(0, `rgba(249, 115, 22, ${ambient.orange})`);
+                glow.addColorStop(1, 'rgba(249, 115, 22, 0)');
+                context.fillStyle = glow;
+                context.fillRect(0, 0, width, height);
+
+                // Linha de luz do WhatsApp ao motoboy. A etapa acesa acompanha o scroll.
+                if (document.body.dataset.view === 'marketing') {
+                    const flowSection = document.querySelector('#view-marketing [data-motion-flow]');
+                    const bounds = flowSection?.getBoundingClientRect();
+                    if (bounds && bounds.bottom > 0 && bounds.top < height) {
+                        const progress = Math.max(0, Math.min(1, (height * 0.84 - bounds.top) / (bounds.height + height * 0.25)));
+                        const points = [
+                            [width * 0.055, height * 0.70],
+                            [width * 0.27, height * 0.62],
+                            [width * 0.49, height * 0.70],
+                            [width * 0.71, height * 0.57],
+                            [width * 0.945, height * 0.66]
+                        ];
+                        context.beginPath();
+                        context.moveTo(...points[0]);
+                        context.bezierCurveTo(width * 0.14, height * 0.70, width * 0.18, height * 0.62, ...points[1]);
+                        context.bezierCurveTo(width * 0.36, height * 0.62, width * 0.40, height * 0.70, ...points[2]);
+                        context.bezierCurveTo(width * 0.58, height * 0.70, width * 0.61, height * 0.57, ...points[3]);
+                        context.bezierCurveTo(width * 0.82, height * 0.57, width * 0.86, height * 0.66, ...points[4]);
+                        const routeGradient = context.createLinearGradient(points[0][0], 0, points[4][0], 0);
+                        routeGradient.addColorStop(0, 'rgba(59, 130, 246, 0.02)');
+                        routeGradient.addColorStop(0.32, 'rgba(59, 130, 246, 0.18)');
+                        routeGradient.addColorStop(0.66, 'rgba(249, 115, 22, 0.18)');
+                        routeGradient.addColorStop(1, 'rgba(249, 115, 22, 0.03)');
+                        context.save();
+                        context.lineWidth = 1.2;
+                        context.strokeStyle = routeGradient;
+                        context.setLineDash([]);
+                        context.stroke();
+                        context.lineWidth = 1.4;
+                        context.strokeStyle = 'rgba(255,255,255,0.42)';
+                        context.setLineDash([Math.max(1, width * progress * 1.12), width * 1.3]);
+                        context.lineDashOffset = staticFrame ? 0 : -(time * 10 % Math.max(width * 1.3, 1));
+                        context.stroke();
+                        context.setLineDash([]);
+                        const labels = ['WhatsApp', 'PDV', 'PIX', 'NFC-e', 'Entrega'];
+                        points.forEach(([x, y], index) => {
+                            const passed = index <= progress * (points.length - 1);
+                            context.beginPath();
+                            context.arc(x, y, passed ? 4 : 2.5, 0, Math.PI * 2);
+                            context.fillStyle = passed ? (index < 2 ? 'rgba(96,165,250,.9)' : 'rgba(251,146,60,.9)') : 'rgba(190,198,216,.45)';
+                            if (passed) {
+                                context.shadowColor = index < 2 ? 'rgba(59,130,246,.55)' : 'rgba(249,115,22,.5)';
+                                context.shadowBlur = 13;
+                            }
+                            context.fill();
+                            context.shadowBlur = 0;
+                            context.fillStyle = 'rgba(223,228,238,.62)';
+                            context.font = '500 10px Outfit, sans-serif';
+                            context.textAlign = 'center';
+                            context.fillText(labels[index], x, y + 19);
+                        });
+                        context.restore();
+                    }
+                }
+
+                context.save();
+                context.translate(parallaxX, parallaxY + scrollDrift);
+                const line = context.createLinearGradient(width * 0.04, height * 0.82, width * 0.95, height * 0.18);
+                line.addColorStop(0, 'rgba(249, 115, 22, 0)');
+                line.addColorStop(0.35, 'rgba(249, 115, 22, 0.12)');
+                line.addColorStop(0.62, 'rgba(59, 130, 246, 0.18)');
+                line.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                context.strokeStyle = line;
+                context.lineWidth = 1;
+                context.beginPath();
+                context.moveTo(-width * 0.05, height * 0.78);
+                context.bezierCurveTo(width * 0.28, height * (0.88 + Math.sin(time * 0.12) * 0.035), width * 0.46, height * (0.22 + Math.cos(time * 0.1) * 0.035), width * 1.05, height * 0.38);
+                context.stroke();
+
+                context.globalCompositeOperation = 'lighter';
+                motes.forEach((mote) => {
+                    const drift = staticFrame ? 0 : time * mote.speed;
+                    const x = mote.x * width + Math.sin(mote.phase + drift) * 14 + parallaxX * 0.22;
+                    const y = ((mote.y * height - drift * 5 + scrollDrift * (mote.warm ? 1 : -0.35)) % (height + 20) + height + 20) % (height + 20) - 10;
+                    const shimmer = 0.28 + (Math.sin(mote.phase + time * 0.6) + 1) * 0.18;
+                    context.fillStyle = mote.warm ? `rgba(249, 115, 22, ${shimmer * 0.48})` : `rgba(145, 190, 255, ${shimmer * 0.48})`;
+                    context.beginPath();
+                    context.arc(x, y, mote.size, 0, Math.PI * 2);
+                    context.fill();
+                });
+                context.restore();
+            }
+
+            function animate(now) {
+                frame = 0;
+                if (document.hidden || reduceMotion) return;
+                cursor.x += (pointer.x - cursor.x) * 0.055;
+                cursor.y += (pointer.y - cursor.y) * 0.055;
+                if (now - lastFrame >= 33) {
+                    paint(now / 1000);
+                    lastFrame = now;
+                }
+                frame = window.requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('resize', resize, { passive: true });
+            if (finePointer) {
+                window.addEventListener('pointermove', (event) => {
+                    pointer.x = event.clientX / Math.max(window.innerWidth, 1);
+                    pointer.y = event.clientY / Math.max(window.innerHeight, 1);
+                }, { passive: true });
+            }
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    window.cancelAnimationFrame(frame);
+                    frame = 0;
+                } else if (!reduceMotion && !frame) {
+                    frame = window.requestAnimationFrame(animate);
+                }
+            });
+
+            resize();
+            canvas.renderStatic = () => { if (reduceMotion) paint(performance.now() / 1000, true); };
+            if (!reduceMotion) frame = window.requestAnimationFrame(animate);
+        }
+
+        let scrollRevealObserver;
+        let scrollMotionFrame = 0;
+        function updateScrollMotion() {
+            if (scrollMotionFrame) return;
+            scrollMotionFrame = window.requestAnimationFrame(() => {
+                const maxScroll = Math.max(document.documentElement.scrollHeight - window.innerHeight, 1);
+                const progress = Math.min(window.scrollY / maxScroll, 1);
+                document.body.style.setProperty('--scroll-progress', progress.toFixed(4));
+                document.body.style.setProperty('--scroll-drift', `${Math.min(window.scrollY * .035, 24).toFixed(1)}px`);
+                document.getElementById('motionField')?.renderStatic?.();
+                scrollMotionFrame = 0;
+            });
+        }
+
+        function observeScrollReveals(view) {
+            scrollRevealObserver?.disconnect();
+            if (!view) return;
+
+            const targets = view.querySelectorAll('section > .glass-panel, section > .grid:not(.home-hero-grid), section > div.text-center, .glass-card, .glass-card-orange');
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduceMotion || !('IntersectionObserver' in window)) return;
+
+            scrollRevealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
+
+            targets.forEach((target, index) => {
+                target.classList.add('reveal-on-scroll');
+                target.style.setProperty('--reveal-delay', `${(index % 3) * 85}ms`);
+                scrollRevealObserver.observe(target);
+            });
+        }
+
+        // OTIMIZAÇÃO DE LOADER INICIAL
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            initMotionField();
+            observeScrollReveals(document.getElementById('view-home'));
+            initSiteMotion();
+            updateScrollMotion();
+        });
+        window.addEventListener('scroll', updateScrollMotion, { passive: true });
+        window.addEventListener('resize', updateScrollMotion, { passive: true });
+        document.addEventListener('visibilitychange', () => syncSiteMotion());
+
+        function syncSiteMotion(activeView = document.body.dataset.view) {
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            document.querySelectorAll('[data-site-motion]').forEach(video => {
+                const isVisible = video.dataset.motionVisible === 'true';
+                const shouldPlay = video.dataset.motionView === activeView && isVisible && !document.hidden && !reduceMotion;
+                if (shouldPlay) {
+                    const playback = video.play();
+                    if (playback?.catch) playback.catch(() => {});
+                } else {
+                    video.pause();
+                }
+            });
+        }
+
+        function initSiteMotion() {
+            const videos = [...document.querySelectorAll('[data-site-motion]')];
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(entry => { entry.target.dataset.motionVisible = String(entry.isIntersecting); });
+                    syncSiteMotion();
+                }, { threshold: 0.18 });
+                videos.forEach(video => observer.observe(video));
+            } else {
+                videos.forEach(video => { video.dataset.motionVisible = 'true'; });
+                syncSiteMotion();
+            }
+        }
+
+        // TROCA DE VISÕES COM CORTINA, COMO UMA APRESENTAÇÃO.
+        const viewSequence = ['home', 'audiovisual', 'tecnologia', 'marketing', 'equipe'];
+        let viewTransitionLocked = false;
+
+        async function switchView(viewName, { scrollDirection = null } = {}) {
+            const selectedView = document.getElementById(`view-${viewName}`);
+            if (!selectedView || viewTransitionLocked) return;
+            const activeView = document.querySelector('.page-view.active-view');
+            if (activeView?.id === `view-${viewName}`) return;
+
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const curtain = document.getElementById('pageCurtain');
+            const panels = curtain ? [...curtain.querySelectorAll('.page-curtain-panel')] : [];
+            const useCurtain = !scrollDirection && !reduceMotion;
+            viewTransitionLocked = true;
+            const nextPageDock = document.getElementById('nextPageDock');
+            nextPageDock?.classList.remove('is-visible', 'is-interactive');
+            nextPageDock?.setAttribute('aria-hidden', 'true');
+            document.getElementById('nextPageButton')?.setAttribute('tabindex', '-1');
+            if (nextPageDock) {
+                nextPageDock.style.opacity = '0';
+                nextPageDock.style.transform = 'translate(-50%, 14px) scale(.98)';
+            }
+            if (useCurtain) curtain?.classList.add('is-running');
+
+            let exitAnimation = null;
+            if (scrollDirection && !reduceMotion && activeView?.animate) {
+                activeView.classList.add('scroll-roll-view');
+                const goingDown = scrollDirection === 'down';
+                exitAnimation = activeView.animate([
+                    { opacity: 1, transform: 'translate3d(0, 0, 0) rotateX(0) scale(1)' },
+                    { opacity: 0, transform: `translate3d(0, ${goingDown ? '-92vh' : '92vh'}, 0) rotateX(${goingDown ? '-11deg' : '11deg'}) scale(.92)` }
+                ], { duration: 430, easing: 'cubic-bezier(.65, 0, .35, 1)', fill: 'forwards' });
+                await exitAnimation.finished.catch(() => {});
+            }
+
+            const animatePanels = async (frames, options, finalTransforms) => {
+                if (!useCurtain || !panels.length) return;
+                const animations = panels.map((panel, index) => panel.animate(frames(index), { ...options, fill: 'forwards' }));
+                await Promise.all(animations.map(animation => animation.finished.catch(() => {})));
+                panels.forEach((panel, index) => { panel.style.transform = finalTransforms[index]; });
+                animations.forEach(animation => animation.cancel());
+            };
+
+            await animatePanels(
+                index => index === 0
+                    ? [{ transform: 'translateX(-101%)' }, { transform: 'translateX(0)' }]
+                    : [{ transform: 'translateX(101%)' }, { transform: 'translateX(0)' }],
+                { duration: 460, easing: 'cubic-bezier(.76, 0, .24, 1)' },
+                ['translateX(0)', 'translateX(0)']
+            );
+
+            const menu = document.getElementById('mobileMenu');
+            menu?.classList.add('hidden');
+            mobileMenuBtn?.setAttribute('aria-expanded', 'false');
+            mobileMenuBtn?.setAttribute('aria-label', 'Abrir menu');
+
+            document.body.dataset.view = viewName;
+            syncSiteMotion(viewName);
+            document.querySelectorAll('.page-view').forEach(view => view.classList.remove('active-view', 'scroll-roll-view'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            if (exitAnimation) exitAnimation.cancel();
+            selectedView.classList.add('active-view');
+            if (scrollDirection && !reduceMotion) {
+                selectedView.classList.add('scroll-roll-view');
+                const goingDown = scrollDirection === 'down';
+                const arrivalAnimation = selectedView.animate([
+                    { opacity: 0, transform: `translate3d(0, ${goingDown ? '92vh' : '-92vh'}, 0) rotateX(${goingDown ? '11deg' : '-11deg'}) scale(.92)` },
+                    { opacity: 1, transform: 'translate3d(0, 0, 0) rotateX(0) scale(1)' }
+                ], { duration: 620, easing: 'cubic-bezier(.2, .75, .25, 1)', fill: 'both' });
+                arrivalAnimation.finished.finally(() => arrivalAnimation.cancel()).catch(() => {});
+            }
+            document.getElementById(`nav-${viewName}`)?.classList.add('active');
+            observeScrollReveals(selectedView);
+            document.getElementById('motionField')?.renderStatic?.();
+            window.scrollTo({ top: 0, behavior: 'auto' });
+
+            await animatePanels(
+                index => index === 0
+                    ? [{ transform: 'translateX(0)' }, { transform: 'translateX(-101%)' }]
+                    : [{ transform: 'translateX(0)' }, { transform: 'translateX(101%)' }],
+                { duration: 560, easing: 'cubic-bezier(.76, 0, .24, 1)' },
+                ['translateX(-101%)', 'translateX(101%)']
+            );
+            if (useCurtain) curtain?.classList.remove('is-running');
+            panels.forEach(panel => { panel.style.transform = ''; });
+            updateNextPagePrompt();
+            window.setTimeout(() => { viewTransitionLocked = false; }, scrollDirection ? 720 : 0);
+        }
+
+        function updateNextPagePrompt() {
+            const dock = document.getElementById('nextPageDock');
+            const title = document.getElementById('nextPageTitle');
+            const activeView = document.querySelector('.page-view.active-view');
+            const currentIndex = viewSequence.indexOf(document.body.dataset.view);
+            const nextView = viewSequence[currentIndex + 1];
+            const nextLabel = nextView && document.getElementById(`nav-${nextView}`)?.textContent.trim();
+            const distanceToBottom = activeView
+                ? Math.max(0, activeView.getBoundingClientRect().bottom - window.innerHeight - 8)
+                : Infinity;
+            const progress = nextView && nextLabel ? Math.min(1, Math.max(0, 1 - distanceToBottom / 260)) : 0;
+            const visible = progress > 0.01;
+            const interactive = progress >= 0.78;
+            if (title && nextLabel) title.textContent = nextLabel;
+            if (dock) {
+                dock.style.opacity = String(progress);
+                dock.style.transform = `translate(-50%, ${(1 - progress) * 14}px) scale(${.98 + progress * .02})`;
+            }
+            dock?.classList.toggle('is-visible', visible);
+            dock?.classList.toggle('is-interactive', interactive);
+            dock?.setAttribute('aria-hidden', String(!interactive));
+            document.getElementById('nextPageButton')?.setAttribute('tabindex', interactive ? '0' : '-1');
+        }
+
+        function goToNextView() {
+            const currentIndex = viewSequence.indexOf(document.body.dataset.view);
+            const nextView = viewSequence[currentIndex + 1];
+            if (!nextView || viewTransitionLocked) return;
+            document.getElementById('nextPageDock')?.classList.remove('is-visible');
+            void switchView(nextView);
+        }
+
+        document.getElementById('nextPageButton')?.addEventListener('click', goToNextView);
+        window.addEventListener('scroll', updateNextPagePrompt, { passive: true });
+        window.addEventListener('resize', updateNextPagePrompt);
+        updateNextPagePrompt();
+
+        // MENU MOBILE TOGGLE
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (mobileMenu) {
+                    const isOpen = !mobileMenu.classList.toggle('hidden');
+                    mobileMenuBtn.setAttribute('aria-expanded', String(isOpen));
+                    mobileMenuBtn.setAttribute('aria-label', isOpen ? 'Fechar menu' : 'Abrir menu');
+                }
+            });
+        }
+
+        // CATÁLOGO DE EXEMPLO E ESTADO DO PDV DEMONSTRATIVO
+        const showreelVideos = [
+            { title: 'Foco Digital em movimento', src: 'media/videos/entrada-foco-digital.mp4', description: 'Motion 3D e automação conectam a primeira impressão ao fluxo da operação.' },
+            { title: 'Automação de ponta a ponta', src: 'media/videos/automacao-empresa.mp4', description: 'Atendimento, estoque, PDV, pagamento e expedição em um fluxo ilustrativo.' },
+            { title: 'Motion 3D Foco Digital', src: 'media/videos/motion-3d-foco-digital.mp4', description: 'Estudo visual de marca em camadas 3D e movimento.' },
+            { title: 'PDV e painel financeiro', src: 'media/videos/pdv-painel-operacao.mp4', description: 'Venda registrada, indicadores financeiros e pontos de atenção no painel.' }
+        ];
+        let activeShowreelIndex = 0;
+        let nextShowreelIndex = 1;
+        const showreelDialog = document.getElementById('showreelDialog');
+        const showreelPlayer = document.getElementById('showreelPlayer');
+
+        function openShowreel(index = 0) {
+            if (!showreelDialog || !showreelPlayer || showreelDialog.open) return;
+            activeShowreelIndex = (index + showreelVideos.length) % showreelVideos.length;
+            const selected = showreelVideos[activeShowreelIndex];
+            const nextButton = document.querySelector('.page-view.active-view [data-showreel-next]');
+            if (nextButton) { nextButton.hidden = true; nextButton.classList.add('hidden'); }
+            document.getElementById('showreelDialogTitle').textContent = selected.title;
+            document.getElementById('showreelDialogDescription').textContent = selected.description;
+            showreelPlayer.pause();
+            showreelPlayer.src = selected.src;
+            showreelPlayer.muted = true;
+            showreelPlayer.load();
+            showreelDialog.showModal();
+            try {
+                const fullscreenRequest = showreelDialog.requestFullscreen?.();
+                if (fullscreenRequest?.catch) fullscreenRequest.catch(() => {});
+            } catch (_) {}
+            const playback = showreelPlayer.play();
+            if (playback?.catch) {
+                playback.catch(() => {
+                    document.getElementById('showreelDialogDescription').textContent = 'O navegador bloqueou a reprodução. Use o controle de play do vídeo para iniciar.';
+                });
+            }
+        }
+
+        function closeShowreel() {
+            if (document.fullscreenElement && document.exitFullscreen) {
+                const exit = document.exitFullscreen();
+                if (exit?.catch) exit.catch(() => {});
+            }
+            if (showreelPlayer) showreelPlayer.pause();
+            if (showreelDialog?.open) showreelDialog.close();
+        }
+
+        function finishShowreel() {
+            nextShowreelIndex = (activeShowreelIndex + 1) % showreelVideos.length;
+            const nextButton = document.querySelector('.page-view.active-view [data-showreel-next]');
+            closeShowreel();
+            if (!nextButton) return;
+            nextButton.hidden = false;
+            nextButton.classList.remove('hidden');
+            nextButton.setAttribute('aria-label', `Veja outro vídeo: ${showreelVideos[nextShowreelIndex].title}`);
+            window.setTimeout(() => nextButton.focus(), 0);
+        }
+
+        function watchNextVideo() { openShowreel(nextShowreelIndex); }
+
+        showreelPlayer?.addEventListener('ended', finishShowreel);
+        showreelDialog?.addEventListener('cancel', event => { event.preventDefault(); closeShowreel(); });
+        showreelDialog?.addEventListener('click', event => { if (event.target === showreelDialog) closeShowreel(); });
+        showreelDialog?.addEventListener('close', () => {
+            showreelPlayer?.pause();
+            if (showreelPlayer) { showreelPlayer.removeAttribute('src'); showreelPlayer.load(); }
+        });
+
+        const moneyBRL = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        let posCart = [];
+        const reportDemo = {
+            today: { revenue: 5420, orders: 112, margin: 31.8, profit: 1210, stockSpend: 1840, bottlenecks: 46, detail: '23 respostas lentas · 14 sem estoque · 9 pagamentos pendentes', bars: [['08h',420],['10h',620],['12h',1080],['14h',710],['16h',920],['18h',1670]] },
+            week: { revenue: 34520, orders: 186, margin: 30.4, profit: 7860, stockSpend: 12840, bottlenecks: 193, detail: '88 respostas lentas · 61 sem estoque · 44 pagamentos pendentes', bars: [['Seg',3820],['Ter',4180],['Qua',4610],['Qui',4320],['Sex',5720],['Sáb',6940],['Dom',4930]] },
+            month: { revenue: 142880, orders: 728, margin: 29.8, profit: 32140, stockSpend: 52600, bottlenecks: 724, detail: '332 respostas lentas · 241 sem estoque · 151 pagamentos pendentes', bars: [['Sem 1',29400],['Sem 2',33700],['Sem 3',38500],['Sem 4',41280]] }
+        };
+        let activeReportPeriod = 'today';
+
+        function addPosItem(name, price) {
+            const existing = posCart.find(item => item.name === name);
+            if (existing) existing.qty += 1;
+            else posCart.push({ name, price, qty: 1 });
+            document.getElementById('posStatus').textContent = 'Cupom atualizado. Revise os itens antes de registrar.';
+            renderPosCart();
+        }
+
+        function changePosQty(index, delta) {
+            if (!posCart[index]) return;
+            posCart[index].qty += delta;
+            if (posCart[index].qty <= 0) posCart.splice(index, 1);
+            renderPosCart();
+        }
+
+        function clearPosCart() {
+            posCart = [];
+            renderPosCart();
+            document.getElementById('posStatus').textContent = 'Cupom limpo. Nenhuma venda foi registrada.';
+        }
+
+        function renderPosCart() {
+            const list = document.getElementById('posCartList');
+            const subtotalEl = document.getElementById('posSubtotal');
+            const totalEl = document.getElementById('posTotal');
+            if (!list || !subtotalEl || !totalEl) return;
+
+            const total = posCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            if (!posCart.length) {
+                list.innerHTML = '<div class="text-gray-400 text-center py-10 italic">Nenhum item adicionado ao caixa ainda.</div>';
+            } else {
+                list.innerHTML = '';
+                posCart.forEach((item, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between gap-2 pb-2 border-b border-cantaloupe/15 text-gray-200';
+                    row.innerHTML = `<div class="min-w-0"><span class="block truncate">${item.name}</span><span class="text-[10px] text-gray-500">${moneyBRL(item.price)} cada</span></div><div class="flex items-center gap-2"><button type="button" aria-label="Diminuir quantidade" onclick="changePosQty(${index}, -1)" class="w-7 h-7 border border-white/10 rounded-md text-gray-200">−</button><span class="w-5 text-center font-mono">${item.qty}</span><button type="button" aria-label="Aumentar quantidade" onclick="changePosQty(${index}, 1)" class="w-7 h-7 border border-white/10 rounded-md text-gray-200">+</button><span class="w-20 text-right font-mono text-cantaloupe font-bold">${moneyBRL(item.price * item.qty)}</span></div>`;
+                    list.appendChild(row);
+                });
+            }
+            subtotalEl.textContent = moneyBRL(total);
+            totalEl.textContent = moneyBRL(total);
+        }
+
+        function checkoutPos() {
+            const status = document.getElementById('posStatus');
+            if (!posCart.length) {
+                status.textContent = 'Adicione pelo menos um produto para registrar a venda demonstrativa.';
+                return;
+            }
+            const total = posCart.reduce((sum, item) => sum + item.price * item.qty, 0);
+            const customer = document.getElementById('posCustomer').value.trim() || 'Cliente balcão';
+            const payment = document.getElementById('posPaymentMethod').value;
+            const items = posCart.reduce((sum, item) => sum + item.qty, 0);
+            status.textContent = `Venda demonstrativa registrada para ${customer}: ${items} item(ns), ${moneyBRL(total)} via ${payment}.`;
+            [reportDemo.today, reportDemo.week, reportDemo.month].forEach(period => {
+                period.revenue += total;
+                period.orders += 1;
+                period.profit += total * period.margin / 100;
+                period.bars[period.bars.length - 1][1] += total;
+            });
+            renderReport(activeReportPeriod);
+            posCart = [];
+            renderPosCart();
+        }
+
+        function renderReport(periodKey = activeReportPeriod) {
+            activeReportPeriod = periodKey;
+            const data = reportDemo[periodKey];
+            document.getElementById('reportRevenue').textContent = moneyBRL(data.revenue);
+            document.getElementById('reportOrders').textContent = String(data.orders);
+            document.getElementById('reportAverage').textContent = moneyBRL(data.revenue / data.orders);
+            document.getElementById('reportMargin').textContent = `${data.margin.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%`;
+            document.getElementById('reportProfit').textContent = moneyBRL(data.profit);
+            document.getElementById('reportStockSpend').textContent = moneyBRL(data.stockSpend);
+            document.getElementById('reportBottlenecks').textContent = `${data.bottlenecks} oportunidades`;
+            document.getElementById('reportBottleneckDetail').textContent = data.detail;
+            document.getElementById('reportChartCaption').textContent = periodKey === 'today' ? 'Vendas por hora · Hoje' : periodKey === 'week' ? 'Vendas por dia · Últimos 7 dias' : 'Vendas por semana · Últimos 30 dias';
+            const max = Math.max(...data.bars.map(([, value]) => value));
+            document.getElementById('reportChart').innerHTML = data.bars.map(([label, value], index) => `<div class="report-bar ${index === data.bars.length - 1 ? 'today' : ''}" title="${label}: ${moneyBRL(value)}"><i style="height:${Math.max(8, value / max * 100)}%"></i><span>${label}</span></div>`).join('');
+            document.querySelectorAll('.report-period').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.period === periodKey)));
+        }
+
+        function setReportPeriod(period) { renderReport(period); }
+
+        function updateSavingsEstimate() {
+            const count = Math.max(0, Number(document.getElementById('staffCount').value) || 0);
+            const cost = Math.max(0, Number(document.getElementById('staffCost').value) || 0);
+            const chats = Math.max(0, Number(document.getElementById('monthlyChats').value) || 0);
+            const total = count * cost;
+            document.getElementById('currentStaffCost').textContent = moneyBRL(total);
+            document.getElementById('chatVolumeSummary').textContent = `${chats.toLocaleString('pt-BR')} conversas/mês`;
+            const message = `Olá! Quero calcular quanto minha empresa pode economizar com IA. Hoje temos ${count} pessoas no atendimento/caixa, custo total informado de ${moneyBRL(total)} por mês e recebemos cerca de ${chats.toLocaleString('pt-BR')} conversas por mês. Quero entender o escopo e o investimento de uma automação.`;
+            document.getElementById('savingsWhatsApp').href = `https://wa.me/5535998444212?text=${encodeURIComponent(message)}`;
+        }
+
+        // SIMULADOR DE AGENTE: catálogo e estados são fictícios e locais ao navegador.
+        const constructionProducts = {
+            cimento: { name: 'Cimento CP II · saco 50 kg', stock: 48, unit: 'sacos', price: 36.90 },
+            bloco: { name: 'Bloco estrutural 14 × 19 × 39 cm', stock: 220, unit: 'unidades', price: 4.80 },
+            areia: { name: 'Areia média · m³', stock: 12, unit: 'm³', price: 159.00 }
+        };
+        let demoPaymentConfirmed = false;
+        let demoDeliveryRequested = false;
+
+        function addChatBubble(text, kind = 'agent') {
+            const feed = document.getElementById('aiChatMessages');
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${kind}`;
+            bubble.textContent = text;
+            feed.appendChild(bubble);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function askConstructionAgent(message) {
+            const prompt = message.trim();
+            if (!prompt) return;
+            addChatBubble(prompt, 'customer');
+            const normalized = prompt.toLocaleLowerCase('pt-BR');
+            if (/(cimento|bloco|areia)/.test(normalized)) {
+                const key = normalized.includes('cimento') ? 'cimento' : normalized.includes('bloco') ? 'bloco' : 'areia';
+                const product = constructionProducts[key];
+                const quantityMatch = normalized.match(/(\d+)\s*(sacos?|unidades?|unid\.?|m(?:³|3))/);
+                const requestedQty = quantityMatch ? Number(quantityMatch[1]) : 1;
+                const quote = requestedQty <= product.stock ? `Para ${requestedQty} ${product.unit}, a cotação demonstrativa fica em ${moneyBRL(requestedQty * product.price)}.` : `Você pediu ${requestedQty} ${product.unit}, mas o saldo demonstrativo é ${product.stock}. Não fechei o pedido.`;
+                addChatBubble(`Consultei o catálogo demonstrativo: ${product.stock} ${product.unit} disponíveis de ${product.name}. Preço unitário: ${moneyBRL(product.price)}. ${quote} O saldo e o preço só seriam reais com integração ao sistema da loja.`);
+            } else if (/(pagamento|pix|caiu|compensou)/.test(normalized)) {
+                addChatBubble(demoPaymentConfirmed ? 'Status demonstrativo recebido: pagamento aprovado pelo provedor. Em uma implantação real, essa resposta viria do retorno autorizado da integração.' : 'Ainda não recebi um retorno de pagamento nesta demonstração. O agente deve confirmar pelo provedor integrado, nunca apenas por um comprovante enviado no chat.');
+            } else if (/(entrega|entregar|frete)/.test(normalized)) {
+                addChatBubble(demoDeliveryRequested ? 'A solicitação demonstrativa já foi encaminhada para a equipe de entrega.' : 'Posso abrir uma solicitação para a equipe. Para uma operação real, o agente precisa validar endereço, disponibilidade e pagamento conforme as regras da loja.');
+            } else {
+                addChatBubble('Posso consultar os materiais do catálogo demonstrativo, informar preço e saldo de exemplo, verificar o estado simulado do pagamento ou explicar o próximo passo da entrega.');
+            }
+        }
+
+        function simulateConstructionPayment() {
+            addChatBubble('Simular retorno aprovado do provedor de pagamento?', 'customer');
+            demoPaymentConfirmed = true;
+            addChatBubble('Pagamento confirmado no cenário de demonstração. Em uma integração real, essa confirmação viria do sistema de pagamento conectado. Quer que eu abra a solicitação de entrega?');
+        }
+
+        function simulateConstructionDelivery() {
+            if (!demoPaymentConfirmed) {
+                addChatBubble('Ainda não há confirmação de pagamento neste cenário. Primeiro confirme o status no provedor integrado.', 'system');
+                return;
+            }
+            if (demoDeliveryRequested) {
+                addChatBubble('A solicitação de entrega demonstrativa já foi registrada.', 'system');
+                return;
+            }
+            demoDeliveryRequested = true;
+            addChatBubble('Solicitação de entrega demonstrativa enviada para a equipe. Nenhuma mensagem real foi enviada pelo site.', 'system');
+            addChatBubble('Pedido separado para conferência. A equipe vai combinar endereço e janela de entrega com você.');
+        }
+
+        function resetConstructionChat() {
+            demoPaymentConfirmed = false;
+            demoDeliveryRequested = false;
+            document.getElementById('aiChatMessages').innerHTML = '<div class="chat-bubble customer">Bom dia! Tem 20 sacos de cimento CP II? Quanto fica?</div><div class="chat-bubble agent">Bom dia! Consultei o estoque demonstrativo: temos 48 sacos de cimento CP II de 50 kg. Cada um está por R$ 36,90. Para 20 unidades, o subtotal fica em R$ 738,00. Quer incluir mais algum material ou consultar a entrega?</div>';
+        }
+
+        document.getElementById('aiChatForm').addEventListener('submit', event => {
+            event.preventDefault();
+            const input = document.getElementById('aiChatInput');
+            askConstructionAgent(input.value);
+            input.value = '';
+        });
+
+        ['staffCount', 'staffCost', 'monthlyChats'].forEach(id => document.getElementById(id).addEventListener('input', updateSavingsEstimate));
+
+        renderPosCart();
+        renderReport();
+        updateSavingsEstimate();
+    </script>
+</body>
+</html>
+
+
+
+
