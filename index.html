@@ -679,9 +679,34 @@
                     <div class="hero-art-col relative z-10" aria-hidden="true">
                         <div class="focus-art">
                             <div class="focus-video-frame">
-                                <video id="homeMotionVideo" class="focus-home-video" autoplay muted loop playsinline preload="metadata" poster="media/videos/entrada-foco-digital-poster.png" data-site-motion data-motion-view="home" data-motion-visible="false" tabindex="-1">
-                                    <source src="media/videos/entrada-foco-digital.mp4" type="video/mp4">
-                                </video>
+                                <div class="video-player-container">
+                                    <div class="video-overlay-play">
+                                        <button class="btn-play-big"><i data-lucide="play" class="w-8 h-8"></i></button>
+                                    </div>
+                                    <div class="video-loading"></div>
+                                    <div class="video-error">Erro ao carregar o vídeo</div>
+                                    <video id="homeMotionVideo" class="focus-home-video" autoplay muted loop playsinline preload="metadata" poster="media/videos/entrada-foco-digital-poster.png" data-site-motion data-motion-view="home" data-motion-visible="false" tabindex="-1">
+                                        <source src="media/videos/entrada-foco-digital.mp4" type="video/mp4">
+                                    </video>
+                                    <div class="video-controls">
+                                        <div class="video-control-row">
+                                            <button class="btn-play-pause"><i data-lucide="play" class="w-5 h-5"></i></button>
+                                            <div class="progress-wrapper">
+                                                <div class="time-display">
+                                                    <span class="time-current">0:00</span>
+                                                    <span class="time-duration">0:00</span>
+                                                </div>
+                                                <input type="range" class="progress-bar" min="0" max="100" value="0">
+                                                <div class="progress-fill"></div>
+                                            </div>
+                                            <div class="volume-control">
+                                                <i data-lucide="volume-2" class="w-4 h-4"></i>
+                                                <input type="range" class="volume-range" min="0" max="100" value="80">
+                                            </div>
+                                            <button class="btn-fullscreen"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
                                 <span class="focus-video-badge"><i></i>Marca em movimento</span>
                                 <div class="focus-video-caption">
                                     <div><strong>Comunicação que move a operação.</strong><span>Motion 3D · automação · crescimento</span></div>
@@ -1406,7 +1431,32 @@
             <button type="button" class="showreel-dialog-close" onclick="closeShowreel()" aria-label="Fechar vídeo"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
         <div class="showreel-dialog-stage">
-            <video id="showreelPlayer" controls playsinline preload="none" aria-describedby="showreelDialogDescription"></video>
+            <div class="video-player-container">
+                <div class="video-overlay-play">
+                    <button class="btn-play-big"><i data-lucide="play" class="w-8 h-8"></i></button>
+                </div>
+                <div class="video-loading"></div>
+                <div class="video-error">Erro ao carregar o vídeo</div>
+                <video id="showreelPlayer" playsinline preload="none" aria-describedby="showreelDialogDescription"></video>
+                <div class="video-controls">
+                    <div class="video-control-row">
+                        <button class="btn-play-pause"><i data-lucide="play" class="w-5 h-5"></i></button>
+                        <div class="progress-wrapper">
+                            <div class="time-display">
+                                <span class="time-current">0:00</span>
+                                <span class="time-duration">0:00</span>
+                            </div>
+                            <input type="range" class="progress-bar" min="0" max="100" value="0">
+                            <div class="progress-fill"></div>
+                        </div>
+                        <div class="volume-control">
+                            <i data-lucide="volume-2" class="w-4 h-4"></i>
+                            <input type="range" class="volume-range" min="0" max="100" value="80">
+                        </div>
+                        <button class="btn-fullscreen"><i data-lucide="maximize" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+            </div>
         </div>
         <p id="showreelDialogDescription" class="w-full max-w-6xl mx-auto mt-3 text-xs text-gray-400" aria-live="polite"></p>
     </dialog>
@@ -1431,6 +1481,10 @@
         </div>
     </footer>
 
+    <!-- PLAYER DE VÍDEO CUSTOMIZADO -->
+    <style>
+        .video-player-container{position:relative;width:100%;max-width:900px;margin:0 auto;background:#000;border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08)}.video-player-container video{width:100%;height:auto;display:block;background:#000}.video-controls{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(180deg,rgba(0,0,0,0.7),transparent);padding:16px 20px 24px;display:flex;flex-direction:column;gap:12px;opacity:1;transition:opacity .3s ease;z-index:10}.video-control-row{display:flex;align-items:center;gap:12px;color:#fff}.btn-play-pause{width:36px;height:36px;border-radius:50%;border:none;background:var(--cantaloupe);color:#07070d;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;font-weight:bold;transition:all .2s ease;flex-shrink:0}.btn-play-pause:hover{background:var(--electric);color:#fff;transform:scale(1.05)}.progress-wrapper{flex:1;display:flex;flex-direction:column;gap:6px}.progress-bar{width:100%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;cursor:pointer;position:relative;appearance:none}.progress-bar::-webkit-slider-thumb{appearance:none;width:12px;height:12px;background:var(--cantaloupe);border-radius:50%;cursor:pointer}.progress-fill{position:absolute;left:0;top:0;height:100%;background:var(--cantaloupe);border-radius:2px;width:0%}.time-display{font-size:11px;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,0.7);display:flex;justify-content:space-between}.volume-control{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,0.8);cursor:pointer;font-size:13px}.volume-range{width:80px;height:4px;background:rgba(255,255,255,0.3);border-radius:2px;cursor:pointer;appearance:none}.volume-range::-webkit-slider-thumb{appearance:none;width:10px;height:10px;background:var(--electric);border-radius:50%;cursor:pointer}.btn-fullscreen{width:34px;height:34px;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s ease;flex-shrink:0}.btn-fullscreen:hover{background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.4)}.video-overlay-play{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:20;transition:opacity .3s ease}.video-overlay-play:hover{background:rgba(0,0,0,0.2)}.btn-play-big{width:70px;height:70px;border-radius:50%;background:var(--cantaloupe);color:#07070d;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:bold;box-shadow:0 10px 30px rgba(249,115,22,0.4);transition:all .3s ease;border:none;cursor:pointer}.btn-play-big:hover{transform:scale(1.1);background:var(--electric);color:#fff;box-shadow:0 15px 40px rgba(59,130,246,0.5)}.video-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;border:3px solid rgba(249,115,22,0.3);border-top:3px solid var(--cantaloupe);border-radius:50%;animation:spin 1s linear infinite;z-index:30;display:none}@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0deg)}100%{transform:translate(-50%,-50%) rotate(360deg)}}.video-error{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff6b6b;text-align:center;padding:20px;background:rgba(0,0,0,0.8);border-radius:12px;z-index:30;display:none}
+    </style>
     <!-- LOGICA JS DE SWAP DE PÁGINAS, CANVAS AUDIOVISUAL E TERMINAL DE CAIXA -->
     <script>
         // CAMPO DE LUZ INTERATIVO: acompanha o cursor e o movimento da página.
@@ -2087,6 +2141,95 @@
         renderPosCart();
         renderReport();
         updateSavingsEstimate();
+        // ============ VIDEO PLAYER CUSTOMIZADO ============
+        function initVideoPlayer(videoElement, containerSelector) {
+            const container = videoElement.closest(containerSelector);
+            if (!container) return;
+            const btnPlayPause = container.querySelector('.btn-play-pause');
+            const btnFullscreen = container.querySelector('.btn-fullscreen');
+            const progressBar = container.querySelector('.progress-bar');
+            const progressFill = container.querySelector('.progress-fill');
+            const timeCurrent = container.querySelector('.time-current');
+            const timeDuration = container.querySelector('.time-duration');
+            const overlayPlay = container.querySelector('.video-overlay-play');
+            const btnPlayBig = container.querySelector('.btn-play-big');
+            const volumeRange = container.querySelector('.volume-range');
+            const loading = container.querySelector('.video-loading');
+            let isDragging = false;
+            function formatTime(seconds) {
+                if (isNaN(seconds)) return '0:00';
+                const m = Math.floor(seconds / 60);
+                const s = Math.floor(seconds % 60);
+                return m + ':' + (s < 10 ? '0' : '') + s;
+            }
+            function updatePlayButton() {
+                if (videoElement.paused) {
+                    btnPlayPause.innerHTML = '<i data-lucide="play" class="w-5 h-5"></i>';
+                    overlayPlay.style.display = 'flex';
+                    btnPlayBig.style.display = 'flex';
+                } else {
+                    btnPlayPause.innerHTML = '<i data-lucide="pause" class="w-5 h-5"></i>';
+                    overlayPlay.style.display = 'none';
+                    btnPlayBig.style.display = 'none';
+                }
+                lucide.createIcons();
+            }
+            function togglePlay() {
+                if (videoElement.paused) { videoElement.play().catch(() => {}); }
+                else { videoElement.pause(); }
+            }
+            function updateProgress() {
+                if (!isDragging && videoElement.duration) {
+                    const percent = (videoElement.currentTime / videoElement.duration) * 100;
+                    progressFill.style.width = percent + '%';
+                    progressBar.value = percent;
+                }
+                timeCurrent.textContent = formatTime(videoElement.currentTime);
+            }
+            function updateDuration() {
+                if (videoElement.duration) { timeDuration.textContent = formatTime(videoElement.duration); }
+            }
+            function seek(e) {
+                const rect = progressBar.getBoundingClientRect();
+                const pos = (e.clientX - rect.left) / rect.width;
+                videoElement.currentTime = pos * videoElement.duration;
+            }
+            function setVolume() { videoElement.volume = volumeRange.value / 100; }
+            function toggleFullscreen() {
+                if (!document.fullscreenElement) { container.requestFullscreen().catch(() => {}); }
+                else { document.exitFullscreen(); }
+            }
+            btnPlayPause.addEventListener('click', togglePlay);
+            btnPlayBig.addEventListener('click', togglePlay);
+            overlayPlay.addEventListener('click', togglePlay);
+            btnFullscreen.addEventListener('click', toggleFullscreen);
+            volumeRange.addEventListener('input', setVolume);
+            progressBar.addEventListener('mousedown', () => { isDragging = true; });
+            progressBar.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
+            window.addEventListener('mouseup', () => { isDragging = false; });
+            progressBar.addEventListener('input', (e) => seek(e));
+            videoElement.addEventListener('play', updatePlayButton);
+            videoElement.addEventListener('pause', updatePlayButton);
+            videoElement.addEventListener('timeupdate', updateProgress);
+            videoElement.addEventListener('loadedmetadata', updateDuration);
+            videoElement.addEventListener('ended', updatePlayButton);
+            videoElement.addEventListener('waiting', () => { loading.style.display = 'block'; });
+            videoElement.addEventListener('canplay', () => { loading.style.display = 'none'; });
+            videoElement.addEventListener('error', () => {
+                loading.style.display = 'none';
+                const errorEl = container.querySelector('.video-error');
+                if (errorEl) errorEl.style.display = 'block';
+            });
+            videoElement.volume = volumeRange.value / 100;
+            updatePlayButton();
+            updateDuration();
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.video-player-container').forEach(container => {
+                const video = container.querySelector('video');
+                if (video) initVideoPlayer(video, '.video-player-container');
+            });
+        });
     </script>
 </body>
 </html>
