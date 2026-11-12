@@ -2141,6 +2141,12 @@
         renderPosCart();
         renderReport();
         updateSavingsEstimate();
+    <style>
+        :fullscreen .video-player-container, :-webkit-full-screen .video-player-container, :-moz-full-screen .video-player-container{width:100vw;height:100vh;max-width:none;margin:0;border-radius:0;position:fixed;top:0;left:0;z-index:9999;background:#000}
+        :fullscreen .video-controls, :-webkit-full-screen .video-controls, :-moz-full-screen .video-controls{background:linear-gradient(180deg,rgba(0,0,0,0.6),transparent)}
+        :fullscreen .btn-fullscreen i, :-webkit-full-screen .btn-fullscreen i, :-moz-full-screen .btn-fullscreen i{display:none}
+        :fullscreen .btn-fullscreen::after, :-webkit-full-screen .btn-fullscreen::after, :-moz-full-screen .btn-fullscreen::after{content:"⛶";font-size:14px}
+    </style>
         // ============ VIDEO PLAYER CUSTOMIZADO ============
         function initVideoPlayer(videoElement, containerSelector) {
             const container = videoElement.closest(containerSelector);
@@ -2196,13 +2202,24 @@
             }
             function setVolume() { videoElement.volume = volumeRange.value / 100; }
             function toggleFullscreen() {
-                if (!document.fullscreenElement) { container.requestFullscreen().catch(() => {}); }
-                else { document.exitFullscreen(); }
+                if (!document.fullscreenElement) {
+                    container.requestFullscreen().catch(() => {});
+                    btnFullscreen.innerHTML = '<span style="font-size:14px">⛶</span>';
+                } else {
+                    document.exitFullscreen();
+                    btnFullscreen.innerHTML = '<i data-lucide="maximize" class="w-4 h-4"></i>';
+                    lucide.createIcons();
+                }
             }
             btnPlayPause.addEventListener('click', togglePlay);
             btnPlayBig.addEventListener('click', togglePlay);
             overlayPlay.addEventListener('click', togglePlay);
             btnFullscreen.addEventListener('click', toggleFullscreen);
+            videoElement.addEventListener('dblclick', toggleFullscreen);
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+                if (e.key === 'Escape' && document.fullscreenElement) document.exitFullscreen();
+            });
             volumeRange.addEventListener('input', setVolume);
             progressBar.addEventListener('mousedown', () => { isDragging = true; });
             progressBar.addEventListener('mousemove', (e) => { if (isDragging) seek(e); });
