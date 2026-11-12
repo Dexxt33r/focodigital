@@ -583,22 +583,22 @@
     <div class="fixed top-4 inset-x-0 z-40 flex justify-center px-4">
         <header class="floating-nav-dock w-full max-w-6xl rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between">
             
-            <!-- LOGO FOCO - Ícone da câmera + FOCO -->
+            <!-- LOGO FOCO - Ícone da câmera + FOCO com "O" = lente -->
             <a href="javascript:void(0)" onclick="switchView('home')" class="flex items-center space-x-2 group">
                 <div class="h-8 flex items-center">
-                    <!-- Ícone da câmera/lente -->
-                    <svg class="h-7 w-auto transition-transform group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="45" cy="50" r="24" fill="#07070d" stroke="#3b82f6" stroke-width="3"/>
-                        <circle cx="45" cy="50" r="10" fill="#f97316"/>
-                        <path d="M35 40 L55 40 L50 60 L35 60 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
-                        <path d="M40 35 L40 65 L50 65 L50 35 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
-                        <!-- Texto FOCO -->
-                        <text x="65" y="62" font-family="'Outfit', sans-serif" font-weight="900" font-size="22" fill="#FFFFFF" letter-spacing="1">FOCO</text>
+                    <!-- Ícone da câmera/lente com FOCO (o "O" é a lente) -->
+                    <svg class="h-7 w-auto transition-transform group-hover:scale-105" viewBox="0 0 140 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Câmera/Lente do "O" -->
+                        <circle cx="50" cy="50" r="22" fill="#07070d" stroke="#3b82f6" stroke-width="3"/>
+                        <circle cx="50" cy="50" r="9" fill="#f97316"/>
+                        <path d="M38 42 L62 42 L58 58 L38 58 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                        <path d="M44 35 L44 65 L54 65 L54 35 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>
+                        <!-- Texto FOCO (sem o O, que é a lente acima) -->
+                        <text x="20" y="62" font-family="'Outfit', sans-serif" font-weight="900" font-size="24" fill="#FFFFFF" letter-spacing="1">FC</text>
                     </svg>
-                    <!-- Badge com símbolo de crescimento/gráfico subindo -->
-                    <span class="ml-2 px-3 py-1 rounded-full text-[10px] font-black bg-cantaloupe text-night flex items-center gap-1 hidden lg:inline-block">
+                    <!-- Badge apenas com símbolo de crescimento (setinha) -->
+                    <span class="ml-2 px-3 py-1 rounded-full text-[10px] font-black bg-cantaloupe text-night flex items-center hidden lg:inline-block">
                         <i data-lucide="trending-up" class="w-4 h-4"></i>
-                        <span>CRESCIMENTO</span>
                     </span>
                 </div>
             </a>
