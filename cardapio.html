@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.4.0/model-viewer.min.js"></script>
   <style>
     :root{--night:#07070d;--blue:#3b82f6;--blue-dark:#2563eb;--orange:#f97316;--muted:#aab4c5}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 78% 8%,rgba(59,130,246,.15),transparent 34rem),radial-gradient(ellipse at 8% 42%,rgba(249,115,22,.08),transparent 28rem),linear-gradient(180deg,#0b0d14 0%,var(--night) 42rem,#090a10 100%);color:#fff;font-family:Outfit, sans-serif}
@@ -33,13 +34,40 @@
     .ar-copy h2{font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.05;letter-spacing:-.05em;margin:12px 0}.ar-copy p{color:#b8c2d2;line-height:1.65;font-size:.94rem}
     .steps{display:grid;gap:12px;margin:22px 0}.step{display:flex;gap:12px;color:#d9e1ed;font-size:.83rem;line-height:1.5}.step b{width:26px;height:26px;flex:none;display:grid;place-items:center;border-radius:50%;background:#3b82f626;color:#3b82f6}
     .viewer-card{padding:14px;display:flex;flex-direction:column;min-height:440px}.viewer-top{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 12px}.viewer-top span{font:700 .62rem 'JetBrains Mono';color:#aab4c5;letter-spacing:.12em}
-    #burgerCanvas{width:100%;height:330px;display:block;border-radius:18px;background:radial-gradient(ellipse at 50% 55%,#26364c,#101722 65%,#0a0d14)}
+    #burgerModel{width:100%;height:380px;display:block;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at 50% 55%,#26364c,#101722 65%,#0a0d14);--poster-color:transparent}
+    .ar-launch{border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:12px 18px;background:linear-gradient(100deg,#f97316,#fb923c);color:#07070d;font-weight:900;box-shadow:0 10px 30px rgba(0,0,0,.35);margin:0 0 18px 18px}
+    model-viewer::part(default-progress-bar){background:#f97316;height:3px}
+    model-viewer:focus{outline:none}
     .viewer-controls{display:flex;gap:9px;flex-wrap:wrap;padding:12px 4px 4px}.viewer-controls .btn{flex:1;justify-content:center}.status{font-size:.72rem;color:#9eacc0;line-height:1.5;padding:10px 8px 0;min-height:34px}
     .notice{border:1px solid rgba(249,115,22,.35);background:rgba(249,115,22,.07);color:#f6c49b;border-radius:14px;padding:14px;font-size:.78rem;line-height:1.55;margin-top:18px}
     footer{border-top:1px solid #ffffff18;padding:26px 0 40px;color:#9ca9bb;font-size:.8rem;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
     @media(max-width:850px){.hero,.ar-section{grid-template-columns:1fr}.hero{padding-top:48px}.hero-visual{min-height:260px}.hero-visual img{min-height:260px}.menu-grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:560px){.wrap{width:min(100% - 28px,1160px)}header{padding:9px 12px;margin-top:10px}.brand{font-size:.82rem}.back{font-size:.7rem;padding:8px 10px}.hero{padding-top:42px}.menu-grid{grid-template-columns:1fr}.food-photo{height:210px}.section-head{display:block}.hint{margin-top:10px}.viewer-card{min-height:0;padding:10px}#burgerCanvas{height:280px}.viewer-controls{flex-direction:column}.viewer-controls .btn{width:100%}}
+    @media(max-width:560px){.wrap{width:min(100% - 28px,1160px)}header{padding:9px 12px;margin-top:10px}.brand{font-size:.82rem}.back{font-size:.7rem;padding:8px 10px}.hero{padding-top:42px}.menu-grid{grid-template-columns:1fr}.food-photo{height:210px}.section-head{display:block}.hint{margin-top:10px}.viewer-card{min-height:0;padding:10px}#burgerModel{height:320px}.viewer-controls{flex-direction:column}.viewer-controls .btn{width:100%}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+  <style id="mobile-polish">
+    html{min-height:100%;background:#07070d;overscroll-behavior-y:none;scroll-padding-top:16px;-webkit-text-size-adjust:100%}
+    body{min-height:100vh;min-height:100svh;background-color:#07070d;overflow-x:clip;overscroll-behavior-y:none;padding-bottom:env(safe-area-inset-bottom)}
+    .wrap{padding-left:max(0px,env(safe-area-inset-left));padding-right:max(0px,env(safe-area-inset-right))}
+    img,model-viewer{max-width:100%}
+    button,a{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+    .food-card,.ar-copy,.viewer-card{min-width:0}
+    .ar-section{scroll-margin-top:16px}
+    @media(max-width:560px){
+      .wrap{width:calc(100% - 28px);width:calc(100% - 28px - env(safe-area-inset-left) - env(safe-area-inset-right))}
+      header{position:relative;top:auto}
+      .hero{gap:22px;padding-bottom:28px}
+      .hero-visual,.hero-visual img{min-height:220px}
+      .ar-section{margin:42px 0 30px;gap:14px}
+      .ar-copy,.viewer-card{border-radius:20px}
+      #burgerModel{height:clamp(270px,82vw,350px)}
+      .viewer-top{gap:10px;flex-wrap:wrap}
+      .viewer-controls{flex-direction:column}
+      .viewer-controls .btn{width:100%;min-height:46px}
+      .ar-launch{font-size:13px;padding:11px 15px;margin:0 0 14px 12px}
+      footer{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
@@ -52,14 +80,14 @@
         <p class="lead">Um menu digital bonito, rápido e pensado para o celular. O cliente explora os pratos, vê fotos, preços e pode experimentar um produto em 3D — com opção de posicioná-lo no próprio ambiente usando realidade aumentada.</p>
         <div class="hero-actions"><a class="btn primary" href="#menu">Explorar cardápio <span>↓</span></a><a class="btn" href="#experiencia-3d">Testar experiência 3D <span>↗</span></a></div>
       </div>
-      <div class="hero-visual"><img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=85" alt="Hambúrguer artesanal em destaque"><div class="hero-label"><div class="eyebrow">Cardápio exemplo</div><strong>Brasa Burger · edição especial</strong></div></div>
+      <div class="hero-visual"><img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=85" alt="Hambúrguer artesanal em destaque" loading="eager" fetchpriority="high" decoding="async"><div class="hero-label"><div class="eyebrow">Cardápio exemplo</div><strong>Brasa Burger · edição especial</strong></div></div>
     </section>
     <section id="menu">
       <div class="section-head"><div><div class="eyebrow">Escolha seu próximo favorito</div><h2>Feito para dar água na boca.</h2></div><p class="hint">Exemplo demonstrativo: categorias, fotos, descrições, preços e acesso rápido à visualização 3D.</p></div>
       <div class="menu-grid">
-        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=85" alt="Hambúrguer artesanal"><span class="tag">Mais pedido</span></div><div class="food-info"><h3>Brasa Duplo</h3><p>Dois burgers na brasa, queijo cheddar, cebola caramelizada e molho da casa.</p><div class="food-bottom"><span class="price">R$ 32,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
-        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=900&q=85" alt="Pizza artesanal"><span class="tag">Da casa</span></div><div class="food-info"><h3>Pizza Margherita</h3><p>Muçarela, tomate fresco, manjericão e massa de fermentação lenta.</p><div class="food-bottom"><span class="price">R$ 42,00</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
-        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=85" alt="Tigela de comida oriental"><span class="tag">Leve</span></div><div class="food-info"><h3>Bowl Oriental</h3><p>Arroz, legumes frescos, proteína grelhada e molho cítrico.</p><div class="food-bottom"><span class="price">R$ 29,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=85" alt="Hambúrguer artesanal" loading="lazy" decoding="async"><span class="tag">Mais pedido</span></div><div class="food-info"><h3>Brasa Duplo</h3><p>Dois burgers na brasa, queijo cheddar, cebola caramelizada e molho da casa.</p><div class="food-bottom"><span class="price">R$ 32,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=900&q=85" alt="Pizza artesanal" loading="lazy" decoding="async"><span class="tag">Da casa</span></div><div class="food-info"><h3>Pizza Margherita</h3><p>Muçarela, tomate fresco, manjericão e massa de fermentação lenta.</p><div class="food-bottom"><span class="price">R$ 42,00</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=85" alt="Tigela de comida oriental" loading="lazy" decoding="async"><span class="tag">Leve</span></div><div class="food-info"><h3>Bowl Oriental</h3><p>Arroz, legumes frescos, proteína grelhada e molho cítrico.</p><div class="food-bottom"><span class="price">R$ 29,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
       </div>
     </section>
     <section class="ar-section" id="experiencia-3d">
@@ -69,124 +97,77 @@
         <p>O cliente pode girar o modelo em 3D e, em aparelhos compatíveis, abrir a câmera para posicionar uma versão em escala real sobre a mesa ou bancada.</p>
         <div class="steps">
           <div class="step"><b>1</b><span>Toque em <strong>Ver em 3D</strong> para explorar o produto.</span></div>
-          <div class="step"><b>2</b><span>Em um celular Android compatível, toque em <strong>Colocar no ambiente</strong>.</span></div>
-          <div class="step"><b>3</b><span>Aponte a câmera para uma superfície e toque para posicionar o lanche em tamanho aproximado real.</span></div>
+          <div class="step"><b>2</b><span>No iPhone (Safari ou Chrome), toque em <strong>Colocar na minha mesa</strong> para abrir o Quick Look. Em Android compat&#237;vel, a experi&#234;ncia abre pelo Scene Viewer.</span></div>
+          <div class="step"><b>3</b><span>Aponte a c&#226;mera para a mesa e posicione o lanche. O modelo tem escala f&#237;sica aproximada de 13,4 x 10,3 x 13,2 cm.</span></div>
         </div>
-        <div class="notice">A demonstração usa um modelo 3D ilustrativo de hambúrguer com dimensões definidas para a experiência. A visualização AR depende de navegador, aparelho e acesso por HTTPS; não é uma medição certificada do alimento servido.</div>
+        <div class="notice">O modelo 3D texturizado &#233; uma representa&#231;&#227;o demonstrativa, com escala baseada nas dimens&#245;es do arquivo (aprox. 13,4 x 10,3 x 13,2 cm). O prato real pode variar. A c&#226;mera exige HTTPS, navegador e aparelho compat&#237;veis.</div>
       </div>
       <div class="viewer-card">
         <div class="viewer-top"><strong>Brasa Duplo · modelo 3D</strong><span>ESCALA 1:1 APROX.</span></div>
-        <canvas id="burgerCanvas" aria-label="Modelo 3D interativo de um hambúrguer"></canvas>
-        <div class="viewer-controls"><button class="btn" id="reset3d">↻ Girar novamente</button><button class="btn primary" id="arButton">◎ Colocar no ambiente</button></div>
-        <div class="status" id="arStatus" role="status">Arraste para girar o modelo. A opção de câmera será habilitada quando o dispositivo oferecer suporte a WebXR AR.</div>
+        <model-viewer id="burgerModel"
+          src="models/burger.glb"
+          ios-src="models/burger.usdz"
+          alt="Hamburguer artesanal em modelo tridimensional texturizado"
+          ar
+          ar-modes="quick-look scene-viewer"
+          quick-look-browsers="safari chrome"
+          ar-scale="fixed"
+          ar-placement="floor"
+          camera-controls
+          touch-action="pan-y"
+          auto-rotate
+          rotation-per-second="18deg"
+          shadow-intensity="1.35"
+          shadow-softness="0.9"
+          exposure="1.15"
+          environment-image="neutral"
+          camera-orbit="25deg 72deg 75%"
+          min-camera-orbit="auto 35deg auto"
+          max-camera-orbit="auto 110deg auto"
+          interaction-prompt="auto"
+          loading="lazy"
+          reveal="auto">
+          <button slot="ar-button" class="ar-launch">Colocar na minha mesa</button>
+        </model-viewer>
+        <div class="viewer-controls"><button class="btn" id="reset3d">Girar novamente</button></div>
+        <div class="status" id="arStatus" role="status">Arraste ou use dois dedos para explorar o modelo. No iPhone, o bot&#227;o abre o Quick Look; no Android compat&#237;vel, abre o Scene Viewer.</div>
       </div>
     </section>
     <footer><span>© Foco Digital · Cardápio Digital & experiências 3D</span><a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20um%20card%C3%A1pio%20digital%20para%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Quero um cardápio assim ↗</a></footer>
   </div>
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
-
-    const canvas = document.querySelector('#burgerCanvas');
+  <script>
+    const model = document.querySelector('#burgerModel');
     const status = document.querySelector('#arStatus');
-    const arButton = document.querySelector('#arButton');
-    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, canvas.clientWidth/canvas.clientHeight, .01, 20);
-    camera.position.set(.28,.22,.43);
-    camera.lookAt(0,.085,0);
-    scene.add(new THREE.HemisphereLight(0xe4f1ff,0x5a3420,2.1));
-    const key = new THREE.DirectionalLight(0xffe0b5,3.1); key.position.set(-.25,.5,.35); key.castShadow=true; scene.add(key);
-    const fill = new THREE.PointLight(0x6ea8ff,1.4); fill.position.set(.3,.18,-.25); scene.add(fill);
+    document.querySelectorAll('[data-show-3d]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelector('#experiencia-3d').scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
 
-    function mat(color, roughness=.72, metalness=0){return new THREE.MeshStandardMaterial({color,roughness,metalness});}
-    const burger = new THREE.Group();
-    function cylinder(radiusTop,radiusBottom,height,y,material,segments=64){
-      const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radiusTop,radiusBottom,height,segments),material);
-      mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;burger.add(mesh);return mesh;
-    }
-    function sphere(sx,sy,sz,y,material){
-      const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),material);
-      mesh.scale.set(sx,sy,sz);mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;burger.add(mesh);return mesh;
-    }
-    const bun=mat('#d88a38'),bunTop=mat('#e9a84e'),breadGlow=mat('#f2c16e'),patty=mat('#493026'),cheese=mat('#ffbf35'),lettuce=mat('#4f9b48'),tomato=mat('#d94c35'),sauce=mat('#f0d2a0');
-    cylinder(.079,.082,.025,.025,bun);
-    cylinder(.083,.078,.025,.051,patty);
-    cylinder(.087,.084,.012,.068,cheese);
-    cylinder(.082,.079,.012,.081,lettuce);
-    cylinder(.079,.078,.014,.094,tomato);
-    sphere(.087,.043,.087,.125,bunTop);
-    // Sesame seeds scattered over the top bun.
-    const seedMat=mat('#fff0c7');
-    for(let i=0;i<19;i++){
-      const a=i*2.399, r=.018+(.052*(i%5)/5), x=Math.cos(a)*r, z=Math.sin(a)*r;
-      const y=.125+.043*Math.sqrt(Math.max(.08,1-(r*r/(.087*.087))));
-      const seed=new THREE.Mesh(new THREE.SphereGeometry(.0032,10,8),seedMat);
-      seed.scale.set(1,.35,1);seed.position.set(x,y,z);seed.rotation.z=.3;burger.add(seed);
-    }
-    // Small lettuce edges create an irregular silhouette.
-    for(let i=0;i<9;i++){const a=i*Math.PI*2/9;const leaf=new THREE.Mesh(new THREE.SphereGeometry(.018,16,12),lettuce);leaf.scale.set(1,.22,.55);leaf.position.set(Math.cos(a)*.078,.077,Math.sin(a)*.078);burger.add(leaf);}
-    scene.add(burger);
+    document.querySelector('#reset3d')?.addEventListener('click', () => {
+      if (!model) return;
+      model.cameraOrbit = '25deg 72deg 75%';
+      model.fieldOfView = '30deg';
+      model.jumpCameraToGoal();
+      model.autoRotate = true;
+    });
 
-    let dragging=false,lastX=0,rotation=0;
-    canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;canvas.setPointerCapture(e.pointerId);});
-    canvas.addEventListener('pointermove',e=>{if(!dragging)return;rotation+=(e.clientX-lastX)*.012;lastX=e.clientX;});
-    canvas.addEventListener('pointerup',()=>dragging=false);
-    canvas.addEventListener('pointercancel',()=>dragging=false);
-    document.querySelector('#reset3d').addEventListener('click',()=>{rotation=0;});
-    document.querySelectorAll('[data-show-3d]').forEach(b=>b.addEventListener('click',()=>document.querySelector('#experiencia-3d').scrollIntoView({behavior:'smooth'})));
+    model?.addEventListener('load', () => {
+      status.textContent = 'Modelo 3D carregado. Arraste para girar e use dois dedos para aproximar. Toque em Colocar na minha mesa para abrir a camera em aparelhos compativeis.';
+    });
 
-    function resize(){
-      const w=canvas.clientWidth,h=canvas.clientHeight;
-      if(!w||!h)return;
-      renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
-    }
-    new ResizeObserver(resize).observe(canvas);
-    renderer.setAnimationLoop(()=>{if(!renderer.xr.isPresenting){burger.rotation.y=rotation+Math.sin(performance.now()*.00045)*.08;renderer.render(scene,camera);}});
+    model?.addEventListener('error', () => {
+      status.textContent = 'Nao foi possivel carregar o modelo 3D. Verifique sua conexao e tente novamente.';
+    });
 
-    let xrSession=null,hitSource=null,reticle=null,placed=false,arBurger=null;
-    async function supportAR(){
-      if(!navigator.xr){status.textContent='Este navegador não oferece WebXR AR. O modelo 3D continua disponível para girar e explorar.';arButton.textContent='AR indisponível neste navegador';arButton.disabled=true;return;}
-      try{
-        const supported=await navigator.xr.isSessionSupported('immersive-ar');
-        if(!supported){status.textContent='Este aparelho/navegador não oferece AR imersiva. Experimente em um Android compatível com Chrome, usando o site por HTTPS.';arButton.textContent='AR não disponível aqui';arButton.disabled=true;}
-      }catch(e){status.textContent='Não foi possível verificar o suporte a AR neste navegador.';arButton.disabled=true;}
-    }
-    await supportAR();
-
-    arButton.addEventListener('click',async()=>{
-      if(!navigator.xr)return;
-      arButton.disabled=true;status.textContent='Solicitando acesso à câmera e iniciando realidade aumentada…';
-      try{
-        xrSession=await navigator.xr.requestSession('immersive-ar',{requiredFeatures:['hit-test'],optionalFeatures:['dom-overlay'],domOverlay:{root:document.body}});
-        renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');
-        await renderer.xr.setSession(xrSession);
-        const viewerSpace=await xrSession.requestReferenceSpace('viewer');
-        hitSource=await xrSession.requestHitTestSource({space:viewerSpace});
-        const refSpace=await xrSession.requestReferenceSpace('local');
-        reticle=new THREE.Mesh(new THREE.RingGeometry(.075,.085,40),new THREE.MeshBasicMaterial({color:0x70b7ff}));
-        reticle.rotation.x=-Math.PI/2;reticle.matrixAutoUpdate=false;reticle.visible=false;scene.add(reticle);
-        arBurger=burger.clone(true);arBurger.scale.setScalar(1);arBurger.visible=false;scene.add(arBurger);placed=false;
-        xrSession.addEventListener('select',()=>{if(reticle?.visible){arBurger.position.setFromMatrixPosition(reticle.matrix);arBurger.quaternion.setFromRotationMatrix(reticle.matrix);arBurger.visible=true;placed=true;status.textContent='Produto posicionado. Caminhe ao redor para observar o tamanho e o volume.';}});
-        xrSession.addEventListener('end',()=>{renderer.xr.enabled=false;renderer.setAnimationLoop(()=>{burger.rotation.y=rotation+Math.sin(performance.now()*.00045)*.08;renderer.render(scene,camera);});hitSource?.cancel();hitSource=null;reticle?.removeFromParent();arBurger?.removeFromParent();reticle=null;arBurger=null;xrSession=null;arButton.disabled=false;status.textContent='Sessão AR encerrada. Você pode explorar o modelo 3D novamente.';});
-        renderer.setAnimationLoop((time,frame)=>{
-          if(frame&&hitSource){
-            const results=frame.getHitTestResults(hitSource);
-            if(results.length){const pose=results[0].getPose(refSpace);reticle.visible=true;reticle.matrix.fromArray(pose.transform.matrix);}
-            else reticle.visible=false;
-          }
-          renderer.render(scene,renderer.xr.getCamera(camera));
-        });
-        status.textContent='Mova o celular lentamente até detectar uma superfície. Quando o círculo aparecer, toque na tela para posicionar o lanche.';
-      }catch(err){
-        status.textContent=err?.name==='NotAllowedError'?'Acesso à câmera/AR não autorizado. Permita o acesso e tente novamente.':'Não foi possível iniciar AR. Use HTTPS em um Android com suporte a WebXR e tente novamente.';
-        arButton.disabled=false;
-      }
+    model?.addEventListener('ar-status', event => {
+      const messages = {
+        'session-started': 'Camera aberta. Aponte para uma superficie e toque para posicionar o hamburger.',
+        'object-placed': 'Hamburger posicionado. Voce pode caminhar ao redor para observar.',
+        'failed': 'Nao foi possivel abrir a realidade aumentada neste aparelho. O modelo 3D continua disponivel nesta pagina.'
+      };
+      if (messages[event.detail.status]) status.textContent = messages[event.detail.status];
     });
   </script>
 </body>
