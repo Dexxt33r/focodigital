@@ -19,10 +19,14 @@ small=Image.fromarray(np.uint8(np.random.rand(128,128)*255)).resize((W,H),Image.
 noise=np.asarray(small,dtype=np.float32)/255.0
 yy,xx=np.mgrid[0:H,0:W]
 v=yy/(H-1)
-cream=np.zeros((H,W),dtype=bool)
-for lo,hi in [(0.19,0.31),(0.49,0.61),(0.79,0.91)]:
-    wobble=(noise-.5)*.11
-    cream |= (v > lo+wobble) & (v < hi+wobble)
+# Winding cream ribbons: the angular pattern drifts with height to mimic hand-swirled shake.
+phase=(2*math.pi*(xx/W*2.55) + 1.35*np.sin(v*math.pi*2.0)
+       + .62*np.sin(v*math.pi*5.4) + (noise-.5)*1.15)
+cream=np.sin(phase) > .20
+# A few broad uneven swaths cross the cup, matching the photographed layered mix.
+for lo,hi in [(0.16,0.23),(0.46,0.53),(0.76,0.83)]:
+    wobble=(noise-.5)*.075 + .025*np.sin(xx/W*math.pi*5)
+    cream |= (v > lo+wobble) & (v < hi+wobble) & (noise>.23)
 grain=np.random.normal(0,2.8,(H,W,1))
 choc=np.array([119,68,43],dtype=np.float32)
 pale=np.array([235,204,177],dtype=np.float32)
