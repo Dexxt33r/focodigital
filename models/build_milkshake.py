@@ -12,34 +12,53 @@ TEX.mkdir(exist_ok=True)
 random.seed(27)
 np.random.seed(27)
 
-# High-resolution procedural chocolate/cream swirl texture, wrapped around a tapered cup.
+# High-resolution photorealistic chocolate-and-cream surface.
+# Organic hand-mixed ribbons: irregular band boundaries, layered mottling and fine food grain.
 W=2048; H=2048
-# Vectorized organic cream ribbons with layered chocolate, subtle marbling and fine grain.
-small=Image.fromarray(np.uint8(np.random.rand(128,128)*255)).resize((W,H),Image.Resampling.BICUBIC).filter(ImageFilter.GaussianBlur(18))
-noise=np.asarray(small,dtype=np.float32)/255.0
-yy,xx=np.mgrid[0:H,0:W]
-v=yy/(H-1)
-# Winding cream ribbons: the angular pattern drifts with height to mimic hand-swirled shake.
-phase=(2*math.pi*(xx/W*2.55) + 1.35*np.sin(v*math.pi*2.0)
-       + .62*np.sin(v*math.pi*5.4) + (noise-.5)*1.15)
-cream=np.sin(phase) > .20
-# A few broad uneven swaths cross the cup, matching the photographed layered mix.
-for lo,hi in [(0.16,0.23),(0.46,0.53),(0.76,0.83)]:
-    wobble=(noise-.5)*.075 + .025*np.sin(xx/W*math.pi*5)
-    cream |= (v > lo+wobble) & (v < hi+wobble) & (noise>.23)
-grain=np.random.normal(0,2.8,(H,W,1))
-choc=np.array([119,68,43],dtype=np.float32)
-pale=np.array([235,204,177],dtype=np.float32)
-base=np.where(cream[:,:,None],pale,choc)
-streak=(.93+.12*(noise[:,:,None]-.5)+.025*np.sin(xx[:,:,None]/W*math.pi*24+v[:,:,None]*31))
-rgb=np.clip(base*streak+grain,0,255).astype(np.uint8)
-# Thin irregular chocolate veins through the cream ribbons.
-veins=(~cream)&(noise>.88)&(np.sin(xx/W*math.pi*19+v*13)>.1)
-rgb[veins]=np.clip(rgb[veins]*.65+np.array([190,145,113])*.35,0,255).astype(np.uint8)
+rng=np.random.default_rng(20261116)
+def field(w,h,blur=0):
+    a=Image.fromarray(np.uint8(rng.random((h,w))*255)).resize((W,H),Image.Resampling.BICUBIC)
+    if blur: a=a.filter(ImageFilter.GaussianBlur(blur))
+    return np.asarray(a,dtype=np.float32)/255.0
+coarse=field(48,72,18)
+medium=field(190,270,5)
+fine=field(720,900,1.0)
+micro=rng.normal(0,1.0,(H,W)).astype(np.float32)
+u=np.linspace(0,1,W,dtype=np.float32)[None,:]
+v=np.linspace(0,1,H,dtype=np.float32)[:,None]
+# Uneven broad cream ribbons, like the real cup: each edge drifts independently around the cup.
+warp=(coarse-.5)*.085 + (medium-.5)*.025
+bands=[(.205,.075),(.505,.115),(.805,.072)]
+cream=np.zeros((H,W),dtype=bool)
+for center,width in bands:
+    c=center + warp + .018*np.sin(u*2*np.pi*2.2 + center*8) + .009*np.sin(u*2*np.pi*6.1+center*3)
+    local_width=width*(.82 + .32*coarse + .12*np.sin(u*2*np.pi*3.7))
+    edge=(fine-.5)*.035 + (medium-.5)*.018
+    cream |= np.abs(v-c) < local_width + edge
+# Thin cream rivulets and chocolate swirls break up the broad ribbons.
+rivulet_phase=u*2*np.pi*3.1 + (coarse-.5)*5 + np.sin(v*9+u*5)*.8
+cream |= (np.sin(rivulet_phase)>0.92) & (fine>.30) & (v>.08) & (v<.94)
+# Soft, food-like color variation: warm dairy tones and deep cocoa with natural mottling.
+cocoa=np.array([104,55,36],dtype=np.float32)
+dairy=np.array([231,199,171],dtype=np.float32)
+base=np.where(cream[:,:,None],dairy,cocoa)
+mottle=((coarse-.5)*22 + (medium-.5)*18 + (fine-.5)*10 + micro*2.2)
+vertical=(np.sin(v*2*np.pi*1.7)*2.5 + np.cos(u*2*np.pi*1.4)*2.0)
+shade=mottle+vertical
+rgb=base + shade[:,:,None]*np.array([1.0,.78,.60],dtype=np.float32)
+# Tiny cocoa flecks and lighter aerated cream speckles.
+flecks=(fine>.986)&cream
+rgb[flecks]=rgb[flecks]*.74
+cream_specks=(fine<.012)&(~cream)
+rgb[cream_specks]=np.clip(rgb[cream_specks]+np.array([24,16,10]),0,255)
+# Broad, low-contrast glossy streaks in the shake surface, not plastic-looking bands.
+gloss=np.maximum(0,np.sin(u*2*np.pi*5.0 + np.sin(v*8+u*4)*.8)-.91)*12
+rgb += gloss[:,:,None]*np.array([1.0,.78,.58],dtype=np.float32)
+rgb=np.clip(rgb,0,255).astype(np.uint8)
 arr=np.dstack([rgb,np.full((H,W),255,dtype=np.uint8)])
 smooth_tex=Image.fromarray(arr,"RGBA")
+smooth_tex=smooth_tex.filter(ImageFilter.GaussianBlur(.28))
 smooth_tex.save(TEX/"milkshake_marble.png")
-
 # Transparent cup with subtle cool PET tint and fine highlights.
 cup_tex=Image.new("RGBA",(512,512),(210,231,235,40))
 cup_tex.save(TEX/"cup_tint.png")
@@ -75,9 +94,9 @@ def mat(color,rough=.45,metal=0,alpha=1,tex=None,double=False):
 
 cream_mat=mat([235,204,177,255],.34)
 choc_mat=mat([119,68,43,255],.31)
-marble_mat=mat([255,255,255,255],.42,tex=smooth_tex)
-clear_mat=mat([222,239,244,54],.12,alpha=.20,double=True)
-lid_mat=mat([237,247,249,105],.12,alpha=.36,double=True)
+marble_mat=mat([255,255,255,255],.58,tex=smooth_tex)
+clear_mat=mat([232,241,244,32],.24,alpha=.13,double=True)
+lid_mat=mat([241,247,249,82],.20,alpha=.28,double=True)
 white_mat=mat([247,247,242,255],.32)
 red_mat=mat([220,43,55,255],.36)
 label_mat=mat([255,255,255,255],.45,tex=label,double=True)
@@ -149,7 +168,7 @@ sticker.visual=trimesh.visual.TextureVisuals(uv=np.array(uv),material=label_mat)
 sticker.metadata["name"]="Açai Dutop front brand sticker"
 parts.append(sticker)
 # Condensation droplets on exposed cup surface; understated, varied size.
-droplet_mat=mat([232,246,249,145],.08,alpha=.55)
+droplet_mat=mat([232,246,249,115],.16,alpha=.42)
 for i in range(72):
     a=random.uniform(-math.pi,math.pi)
     y=random.uniform(.10,.68)
