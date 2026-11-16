@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07070d">
+  <title>Cardápio Digital & 3D | Foco Digital</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{--night:#07070d;--blue:#3b82f6;--blue-dark:#2563eb;--orange:#f97316;--muted:#aab4c5}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 78% 8%,rgba(59,130,246,.15),transparent 34rem),radial-gradient(ellipse at 8% 42%,rgba(249,115,22,.08),transparent 28rem),linear-gradient(180deg,#0b0d14 0%,var(--night) 42rem,#090a10 100%);color:#fff;font-family:Outfit, sans-serif}
+    a{color:inherit;text-decoration:none}button{font:inherit;cursor:pointer}.wrap{width:min(1160px,calc(100% - 40px));margin:auto}
+    header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:11px 22px;margin:16px auto 0;border:1px solid rgba(59,130,246,.22);border-radius:999px;background:rgba(12,15,24,.82);backdrop-filter:blur(18px);box-shadow:0 12px 36px rgba(0,0,0,.28)}
+    .brand{font-weight:900;letter-spacing:.12em}.brand span{color:var(--orange)}.back{font-size:.82rem;color:#cbd5e1;padding:9px 14px;border:1px solid rgba(59,130,246,.28);border-radius:999px;transition:.2s}.back:hover{color:#fff;border-color:var(--orange)}
+    .eyebrow{font:700 .68rem 'JetBrains Mono';letter-spacing:.17em;text-transform:uppercase;color:#3b82f6}
+    .hero{padding:72px 0 44px;display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
+    h1{font-size:clamp(2.6rem,6vw,5rem);line-height:.98;letter-spacing:-.065em;margin:14px 0 20px}.gradient{background:linear-gradient(100deg,#fff 10%,#93c5fd 55%,#f97316);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lead{color:#b8c2d2;font-size:1.08rem;line-height:1.7;max-width:620px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+    .btn{border:1px solid #ffffff24;border-radius:14px;padding:13px 18px;font-weight:800;font-size:.83rem;display:inline-flex;align-items:center;gap:9px;transition:.2s}
+    .btn.primary{background:var(--orange);color:#07070d;border-color:var(--orange)}.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+    .hero-visual{min-height:340px;border:1px solid rgba(59,130,246,.24);border-radius:30px;overflow:hidden;position:relative;background:#101725;box-shadow:0 28px 90px #0009}
+    .hero-visual img{width:100%;height:100%;min-height:340px;object-fit:cover;display:block;opacity:.83}.hero-label{position:absolute;left:20px;bottom:18px;background:#080b12c9;border:1px solid #ffffff30;border-radius:12px;padding:12px 15px;backdrop-filter:blur(12px)}
+    .section-head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin:38px 0 20px}.section-head h2{font-size:clamp(1.7rem,3vw,2.5rem);margin:8px 0 0;letter-spacing:-.04em}.hint{font-size:.82rem;color:var(--muted);max-width:420px;line-height:1.55}
+    .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.food-card{background:linear-gradient(145deg,#171e2c,#0d111a);border:1px solid #ffffff18;border-radius:22px;overflow:hidden;transition:.25s}.food-card:hover{transform:translateY(-5px);border-color:#3b82f6}
+    .food-photo{height:190px;position:relative;overflow:hidden;background:#1a2230}.food-photo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}.food-card:hover .food-photo img{transform:scale(1.06)}
+    .tag{position:absolute;top:13px;left:13px;background:#080b12d9;border:1px solid #ffffff26;border-radius:99px;padding:6px 10px;font:700 .6rem 'JetBrains Mono';letter-spacing:.08em;text-transform:uppercase}
+    .food-info{padding:17px}.food-info h3{font-size:1.15rem;margin:0 0 6px}.food-info p{font-size:.82rem;color:#aeb9ca;line-height:1.5;min-height:40px;margin:0 0 15px}.food-bottom{display:flex;justify-content:space-between;align-items:center}.price{font-weight:900;font-size:1.2rem;color:#f97316}
+    .small-btn{border:1px solid #ffffff2a;border-radius:10px;padding:9px 12px;color:#93c5fd;background:#ffffff08;font-size:.75rem;font-weight:800}.small-btn:hover{background:#3b82f620}
+    .ar-section{margin:70px 0 45px;display:grid;grid-template-columns:1fr 1.05fr;gap:22px;align-items:stretch}
+    .ar-copy,.viewer-card{border:1px solid rgba(59,130,246,.22);border-radius:26px;background:linear-gradient(145deg,#121a29eF,#0b0e16);padding:26px}
+    .ar-copy h2{font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.05;letter-spacing:-.05em;margin:12px 0}.ar-copy p{color:#b8c2d2;line-height:1.65;font-size:.94rem}
+    .steps{display:grid;gap:12px;margin:22px 0}.step{display:flex;gap:12px;color:#d9e1ed;font-size:.83rem;line-height:1.5}.step b{width:26px;height:26px;flex:none;display:grid;place-items:center;border-radius:50%;background:#3b82f626;color:#3b82f6}
+    .viewer-card{padding:14px;display:flex;flex-direction:column;min-height:440px}.viewer-top{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 12px}.viewer-top span{font:700 .62rem 'JetBrains Mono';color:#aab4c5;letter-spacing:.12em}
+    #burgerCanvas{width:100%;height:330px;display:block;border-radius:18px;background:radial-gradient(ellipse at 50% 55%,#26364c,#101722 65%,#0a0d14)}
+    .viewer-controls{display:flex;gap:9px;flex-wrap:wrap;padding:12px 4px 4px}.viewer-controls .btn{flex:1;justify-content:center}.status{font-size:.72rem;color:#9eacc0;line-height:1.5;padding:10px 8px 0;min-height:34px}
+    .notice{border:1px solid rgba(249,115,22,.35);background:rgba(249,115,22,.07);color:#f6c49b;border-radius:14px;padding:14px;font-size:.78rem;line-height:1.55;margin-top:18px}
+    footer{border-top:1px solid #ffffff18;padding:26px 0 40px;color:#9ca9bb;font-size:.8rem;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media(max-width:850px){.hero,.ar-section{grid-template-columns:1fr}.hero{padding-top:48px}.hero-visual{min-height:260px}.hero-visual img{min-height:260px}.menu-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.wrap{width:min(100% - 28px,1160px)}header{padding:9px 12px;margin-top:10px}.brand{font-size:.82rem}.back{font-size:.7rem;padding:8px 10px}.hero{padding-top:42px}.menu-grid{grid-template-columns:1fr}.food-photo{height:210px}.section-head{display:block}.hint{margin-top:10px}.viewer-card{min-height:0;padding:10px}#burgerCanvas{height:280px}.viewer-controls{flex-direction:column}.viewer-controls .btn{width:100%}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header><a class="brand" href="index.html">FOCO <span>DIGITAL</span></a><a class="back" href="index.html">← Voltar ao site principal</a></header>
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Experiência de demonstração · Restaurante</div>
+        <h1><span class="gradient">Seu cardápio.</span><br>Mais interativo.</h1>
+        <p class="lead">Um menu digital bonito, rápido e pensado para o celular. O cliente explora os pratos, vê fotos, preços e pode experimentar um produto em 3D — com opção de posicioná-lo no próprio ambiente usando realidade aumentada.</p>
+        <div class="hero-actions"><a class="btn primary" href="#menu">Explorar cardápio <span>↓</span></a><a class="btn" href="#experiencia-3d">Testar experiência 3D <span>↗</span></a></div>
+      </div>
+      <div class="hero-visual"><img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=85" alt="Hambúrguer artesanal em destaque"><div class="hero-label"><div class="eyebrow">Cardápio exemplo</div><strong>Brasa Burger · edição especial</strong></div></div>
+    </section>
+    <section id="menu">
+      <div class="section-head"><div><div class="eyebrow">Escolha seu próximo favorito</div><h2>Feito para dar água na boca.</h2></div><p class="hint">Exemplo demonstrativo: categorias, fotos, descrições, preços e acesso rápido à visualização 3D.</p></div>
+      <div class="menu-grid">
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=85" alt="Hambúrguer artesanal"><span class="tag">Mais pedido</span></div><div class="food-info"><h3>Brasa Duplo</h3><p>Dois burgers na brasa, queijo cheddar, cebola caramelizada e molho da casa.</p><div class="food-bottom"><span class="price">R$ 32,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=900&q=85" alt="Pizza artesanal"><span class="tag">Da casa</span></div><div class="food-info"><h3>Pizza Margherita</h3><p>Muçarela, tomate fresco, manjericão e massa de fermentação lenta.</p><div class="food-bottom"><span class="price">R$ 42,00</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+        <article class="food-card"><div class="food-photo"><img src="https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=900&q=85" alt="Tigela de comida oriental"><span class="tag">Leve</span></div><div class="food-info"><h3>Bowl Oriental</h3><p>Arroz, legumes frescos, proteína grelhada e molho cítrico.</p><div class="food-bottom"><span class="price">R$ 29,90</span><button class="small-btn" data-show-3d>Ver em 3D</button></div></div></article>
+      </div>
+    </section>
+    <section class="ar-section" id="experiencia-3d">
+      <div class="ar-copy">
+        <div class="eyebrow">Além da foto · 3D + realidade aumentada</div>
+        <h2>Veja o lanche no seu espaço.</h2>
+        <p>O cliente pode girar o modelo em 3D e, em aparelhos compatíveis, abrir a câmera para posicionar uma versão em escala real sobre a mesa ou bancada.</p>
+        <div class="steps">
+          <div class="step"><b>1</b><span>Toque em <strong>Ver em 3D</strong> para explorar o produto.</span></div>
+          <div class="step"><b>2</b><span>Em um celular Android compatível, toque em <strong>Colocar no ambiente</strong>.</span></div>
+          <div class="step"><b>3</b><span>Aponte a câmera para uma superfície e toque para posicionar o lanche em tamanho aproximado real.</span></div>
+        </div>
+        <div class="notice">A demonstração usa um modelo 3D ilustrativo de hambúrguer com dimensões definidas para a experiência. A visualização AR depende de navegador, aparelho e acesso por HTTPS; não é uma medição certificada do alimento servido.</div>
+      </div>
+      <div class="viewer-card">
+        <div class="viewer-top"><strong>Brasa Duplo · modelo 3D</strong><span>ESCALA 1:1 APROX.</span></div>
+        <canvas id="burgerCanvas" aria-label="Modelo 3D interativo de um hambúrguer"></canvas>
+        <div class="viewer-controls"><button class="btn" id="reset3d">↻ Girar novamente</button><button class="btn primary" id="arButton">◎ Colocar no ambiente</button></div>
+        <div class="status" id="arStatus" role="status">Arraste para girar o modelo. A opção de câmera será habilitada quando o dispositivo oferecer suporte a WebXR AR.</div>
+      </div>
+    </section>
+    <footer><span>© Foco Digital · Cardápio Digital & experiências 3D</span><a href="https://wa.me/5535998444212?text=Ol%C3%A1!%20Quero%20um%20card%C3%A1pio%20digital%20para%20meu%20neg%C3%B3cio." target="_blank" rel="noopener">Quero um cardápio assim ↗</a></footer>
+  </div>
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js';
+
+    const canvas = document.querySelector('#burgerCanvas');
+    const status = document.querySelector('#arStatus');
+    const arButton = document.querySelector('#arButton');
+    const renderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, canvas.clientWidth/canvas.clientHeight, .01, 20);
+    camera.position.set(.28,.22,.43);
+    camera.lookAt(0,.085,0);
+    scene.add(new THREE.HemisphereLight(0xe4f1ff,0x5a3420,2.1));
+    const key = new THREE.DirectionalLight(0xffe0b5,3.1); key.position.set(-.25,.5,.35); key.castShadow=true; scene.add(key);
+    const fill = new THREE.PointLight(0x6ea8ff,1.4); fill.position.set(.3,.18,-.25); scene.add(fill);
+
+    function mat(color, roughness=.72, metalness=0){return new THREE.MeshStandardMaterial({color,roughness,metalness});}
+    const burger = new THREE.Group();
+    function cylinder(radiusTop,radiusBottom,height,y,material,segments=64){
+      const mesh=new THREE.Mesh(new THREE.CylinderGeometry(radiusTop,radiusBottom,height,segments),material);
+      mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;burger.add(mesh);return mesh;
+    }
+    function sphere(sx,sy,sz,y,material){
+      const mesh=new THREE.Mesh(new THREE.SphereGeometry(1,48,32),material);
+      mesh.scale.set(sx,sy,sz);mesh.position.y=y;mesh.castShadow=true;mesh.receiveShadow=true;burger.add(mesh);return mesh;
+    }
+    const bun=mat('#d88a38'),bunTop=mat('#e9a84e'),breadGlow=mat('#f2c16e'),patty=mat('#493026'),cheese=mat('#ffbf35'),lettuce=mat('#4f9b48'),tomato=mat('#d94c35'),sauce=mat('#f0d2a0');
+    cylinder(.079,.082,.025,.025,bun);
+    cylinder(.083,.078,.025,.051,patty);
+    cylinder(.087,.084,.012,.068,cheese);
+    cylinder(.082,.079,.012,.081,lettuce);
+    cylinder(.079,.078,.014,.094,tomato);
+    sphere(.087,.043,.087,.125,bunTop);
+    // Sesame seeds scattered over the top bun.
+    const seedMat=mat('#fff0c7');
+    for(let i=0;i<19;i++){
+      const a=i*2.399, r=.018+(.052*(i%5)/5), x=Math.cos(a)*r, z=Math.sin(a)*r;
+      const y=.125+.043*Math.sqrt(Math.max(.08,1-(r*r/(.087*.087))));
+      const seed=new THREE.Mesh(new THREE.SphereGeometry(.0032,10,8),seedMat);
+      seed.scale.set(1,.35,1);seed.position.set(x,y,z);seed.rotation.z=.3;burger.add(seed);
+    }
+    // Small lettuce edges create an irregular silhouette.
+    for(let i=0;i<9;i++){const a=i*Math.PI*2/9;const leaf=new THREE.Mesh(new THREE.SphereGeometry(.018,16,12),lettuce);leaf.scale.set(1,.22,.55);leaf.position.set(Math.cos(a)*.078,.077,Math.sin(a)*.078);burger.add(leaf);}
+    scene.add(burger);
+
+    let dragging=false,lastX=0,rotation=0;
+    canvas.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;canvas.setPointerCapture(e.pointerId);});
+    canvas.addEventListener('pointermove',e=>{if(!dragging)return;rotation+=(e.clientX-lastX)*.012;lastX=e.clientX;});
+    canvas.addEventListener('pointerup',()=>dragging=false);
+    canvas.addEventListener('pointercancel',()=>dragging=false);
+    document.querySelector('#reset3d').addEventListener('click',()=>{rotation=0;});
+    document.querySelectorAll('[data-show-3d]').forEach(b=>b.addEventListener('click',()=>document.querySelector('#experiencia-3d').scrollIntoView({behavior:'smooth'})));
+
+    function resize(){
+      const w=canvas.clientWidth,h=canvas.clientHeight;
+      if(!w||!h)return;
+      renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();
+    }
+    new ResizeObserver(resize).observe(canvas);
+    renderer.setAnimationLoop(()=>{if(!renderer.xr.isPresenting){burger.rotation.y=rotation+Math.sin(performance.now()*.00045)*.08;renderer.render(scene,camera);}});
+
+    let xrSession=null,hitSource=null,reticle=null,placed=false,arBurger=null;
+    async function supportAR(){
+      if(!navigator.xr){status.textContent='Este navegador não oferece WebXR AR. O modelo 3D continua disponível para girar e explorar.';arButton.textContent='AR indisponível neste navegador';arButton.disabled=true;return;}
+      try{
+        const supported=await navigator.xr.isSessionSupported('immersive-ar');
+        if(!supported){status.textContent='Este aparelho/navegador não oferece AR imersiva. Experimente em um Android compatível com Chrome, usando o site por HTTPS.';arButton.textContent='AR não disponível aqui';arButton.disabled=true;}
+      }catch(e){status.textContent='Não foi possível verificar o suporte a AR neste navegador.';arButton.disabled=true;}
+    }
+    await supportAR();
+
+    arButton.addEventListener('click',async()=>{
+      if(!navigator.xr)return;
+      arButton.disabled=true;status.textContent='Solicitando acesso à câmera e iniciando realidade aumentada…';
+      try{
+        xrSession=await navigator.xr.requestSession('immersive-ar',{requiredFeatures:['hit-test'],optionalFeatures:['dom-overlay'],domOverlay:{root:document.body}});
+        renderer.xr.enabled=true;renderer.xr.setReferenceSpaceType('local');
+        await renderer.xr.setSession(xrSession);
+        const viewerSpace=await xrSession.requestReferenceSpace('viewer');
+        hitSource=await xrSession.requestHitTestSource({space:viewerSpace});
+        const refSpace=await xrSession.requestReferenceSpace('local');
+        reticle=new THREE.Mesh(new THREE.RingGeometry(.075,.085,40),new THREE.MeshBasicMaterial({color:0x70b7ff}));
+        reticle.rotation.x=-Math.PI/2;reticle.matrixAutoUpdate=false;reticle.visible=false;scene.add(reticle);
+        arBurger=burger.clone(true);arBurger.scale.setScalar(1);arBurger.visible=false;scene.add(arBurger);placed=false;
+        xrSession.addEventListener('select',()=>{if(reticle?.visible){arBurger.position.setFromMatrixPosition(reticle.matrix);arBurger.quaternion.setFromRotationMatrix(reticle.matrix);arBurger.visible=true;placed=true;status.textContent='Produto posicionado. Caminhe ao redor para observar o tamanho e o volume.';}});
+        xrSession.addEventListener('end',()=>{renderer.xr.enabled=false;renderer.setAnimationLoop(()=>{burger.rotation.y=rotation+Math.sin(performance.now()*.00045)*.08;renderer.render(scene,camera);});hitSource?.cancel();hitSource=null;reticle?.removeFromParent();arBurger?.removeFromParent();reticle=null;arBurger=null;xrSession=null;arButton.disabled=false;status.textContent='Sessão AR encerrada. Você pode explorar o modelo 3D novamente.';});
+        renderer.setAnimationLoop((time,frame)=>{
+          if(frame&&hitSource){
+            const results=frame.getHitTestResults(hitSource);
+            if(results.length){const pose=results[0].getPose(refSpace);reticle.visible=true;reticle.matrix.fromArray(pose.transform.matrix);}
+            else reticle.visible=false;
+          }
+          renderer.render(scene,renderer.xr.getCamera(camera));
+        });
+        status.textContent='Mova o celular lentamente até detectar uma superfície. Quando o círculo aparecer, toque na tela para posicionar o lanche.';
+      }catch(err){
+        status.textContent=err?.name==='NotAllowedError'?'Acesso à câmera/AR não autorizado. Permita o acesso e tente novamente.':'Não foi possível iniciar AR. Use HTTPS em um Android com suporte a WebXR e tente novamente.';
+        arButton.disabled=false;
+      }
+    });
+  </script>
+</body>
+</html>
